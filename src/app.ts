@@ -1,7 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express';
 import dotenv from 'dotenv';
-
-
+import { router } from './routes/api';
 
 dotenv.config();
 
@@ -9,7 +8,7 @@ const app = express();
 
 app.use(express.json());
 
-
+app.use(router);
 
 const port = 3000;
 
@@ -31,9 +30,6 @@ function errorHandler(err: Error , req: Request, res:Response, next: NextFunctio
 
   return res.status(500).json({ error: 'Internal server error' });
 }
-function hallo(req:Request, res:Response, next:NextFunction){
-  return res.json({hallo:"hallo"});
-}
-app.get('/hi',hallo)
+
 app.use(notFoundHandler);
 app.use(errorHandler);

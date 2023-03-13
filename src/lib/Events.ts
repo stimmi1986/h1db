@@ -2,7 +2,6 @@ import { QueryResult } from "pg";
 import slugify from 'slugify';
 
 
-
 export type Event = {
     id: number;
     name: string;

@@ -23,7 +23,7 @@ pool.on('error', (err: Error) => {
     process.exit(-1);
 });
 
-type QueryInput = string|number|null;
+type QueryInput = string | number | null;
 
 export async function query(q: string, values: Array<QueryInput>) {
   let client: pg.PoolClient;
