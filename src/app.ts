@@ -1,12 +1,15 @@
-import express, { NextFunction, request, Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import dotenv from 'dotenv';
-import { router } from './routes/api.js';
+
+
+
+dotenv.config();
 
 const app = express();
-dotenv.config();
+
 app.use(express.json());
 
-app.use(router);
+
 
 const port = 3000;
 
