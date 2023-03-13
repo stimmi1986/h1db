@@ -2,8 +2,8 @@ import dotenv from 'dotenv';
 import pg ,{ QueryResult }  from 'pg';
 import { readFile } from 'fs/promises';
 
-const SCHEMA_FILE = './src/lib/sql/schema.sql';
-const DROP_SCHEMA_FILE = './src/lib/sql/drop.sql';
+const SCHEMA_FILE = './sql/schema.sql';
+const DROP_SCHEMA_FILE = './sql/drop.sql';
 
 dotenv.config({ path: '.env' });
 
@@ -59,9 +59,25 @@ export async function dropSchema(dropFile = DROP_SCHEMA_FILE) {
   return query(data.toString('utf-8'),[]);
 }
 
+/*
+export async function insertEvent(input:Event):Promise<Event|null>{
+    if(!input){
+        return null;
+    }
+    const q = `
+    INSERT INTO events
+        (name,slug)
+    VALUES
+        ($1,$2)
+    RETURNING id`;
+
+}
+
 export async function end() {
   await pool.end();
 }
-/*
-export async function insertEvent(input:Event)
 */
+
+export async function end() {
+  await pool.end();
+}

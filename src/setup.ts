@@ -19,7 +19,7 @@ async function create() {
     console.info('schema not created');
   }
 
-  const data = await readFile('./src/lib/sql/insert.sql');
+  const data = await readFile('./sql/insert.sql');
   const insert = await query(data.toString('utf-8'), []);
 
   if (insert) {

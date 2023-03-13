@@ -12,4 +12,5 @@ router.get('/events/:event/:user', registerDetails)
 router.patch('/events/:event/:user',updateRegistration)
 router.patch('/events/:slug',updateEvent)
 router.post('/login',loginCheck)
+router.get('/logout',endSession)
 */
