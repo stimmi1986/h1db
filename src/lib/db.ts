@@ -53,4 +53,15 @@ export async function dropSchema(dropFile = DROP_SCHEMA_FILE) {
   const data = await readFile(dropFile);
   return query(data.toString('utf-8'),[]);
 }
-export async function insertEvent(input:Event)
+export async function insertEvent(input:Event):Promise<Event|null>{
+    if(!input){
+        return null;
+    }
+    const q = `
+    INSERT INTO events
+        (name,slug)
+    VALUES
+        ($1,$2)
+    RETURNING id`;
+
+}

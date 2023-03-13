@@ -1,4 +1,5 @@
 import { QueryResult } from "pg";
+import slugify from 'slugify';
 
 
 
@@ -18,11 +19,22 @@ type importEvent = {
     url?:string;
     description?:string;
 }
-export function importEventToEvent(input:unknown):Event|null{
+
+export function importEventToEvent(input:unknown):Omit<Event,'id'>|null{
     const potEvent = input as Partial<importEvent> |null;
-    if(!potEvent){
+    if(!potEvent||!potEvent.name){
         return null;
     }
+    const event: Omit<Event,'id'>={
+        name: potEvent.name,
+        slug: slugify(potEvent.name).toLowerCase(),
+        url: potEvent.url? potEvent.url : undefined,
+        description: potEvent.description? potEvent.description : undefined,
+        created: new Date(),
+        updated: new Date(),
+    };
+    return event
+
 }
 export function mapDbEventToEvent(input: QueryResult<Event>| null): Event | null {
     if (!input){
