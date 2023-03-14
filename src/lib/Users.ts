@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import { QueryResult } from 'pg';
+import { User } from '../routes/types.js';
 import { query } from './db.js';
 
 export async function comparePasswords(password:string, hash:string):Promise<boolean>  {
@@ -12,7 +13,7 @@ export async function comparePasswords(password:string, hash:string):Promise<boo
   return false;
 }
 
-export async function findByUsername(username:string):Promise<QueryResult|null> {
+export async function findByUsername(username:string):Promise<User|null> {
   const q = 'SELECT * FROM users WHERE username = $1';
 
   const result = await query(q, [username]);
@@ -24,13 +25,12 @@ export async function findByUsername(username:string):Promise<QueryResult|null> 
   return null;
 }
 
-export async function findById(id:number):Promise<QueryResult|null> {
+export async function findById(id:number):Promise<User|null> {
   const q = 'SELECT * FROM users WHERE id = $1';
 
   try {
     const result = await query(q, [id]);
-
-    if (result.rowCount === 1) {
+    if (result && result.rowCount === 1) {
       return result.rows[0];
     }
   } catch (e) {
@@ -40,7 +40,7 @@ export async function findById(id:number):Promise<QueryResult|null> {
   return null;
 }
 
-export async function createUser(name:string, username:string, password:string):Promise<QueryResult|null> {
+export async function createUser(name:string, username:string, password:string):Promise<User|null> {
   // Geymum hashað password!
   const hashedPassword = await bcrypt.hash(password, 11);
 
