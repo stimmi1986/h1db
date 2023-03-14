@@ -1,40 +1,41 @@
 import express, {Request, Response, NextFunction} from 'express';
+import { eventsIndex, /*createEvent, specificEvent, updateEvent*/ } from '../lib/Events'
+
+
 
 export const router = express.Router();
-// setti þetta upp eins og í verk3 en
-// spurning hvort við köllum þetta einhvað annað en events og event 
-export async function eventsIndex(req: Request, res: Response) {
+
+export async function Index(req: Request, res: Response) {
     return res.json([
       {
-        href: '/events',
+        href: '/event',
         methods: ['GET', 'POST'],
       },
       {
-        href: '/events/:slug',
+        href: '/event/:slug',
         methods: ['GET', 'PATCH', 'DELETE'],
       },
       {
-        href: '/events/:slug/event',
+        href: '/event/:slug/events',
         methods: ['GET', 'POST'],
       },
       {
-        href: '/events/:slug/event/:user',
+        href: '/event/:slug/events/:user',
         methods: ['GET', 'PATCH', 'DELETE'],
       },
     ]);
 }
 
 
-router.get('/', eventsIndex)
-/*
-router.post('/events',createEvent)
-router.get('/events/:slug',specificEvent)
-router.post('/events/:slug',addRegistration)
-router.get('/events/:event/:user', registerDetails)
-router.patch('/events/:event/:user',updateRegistration)
-router.patch('/events/:slug',updateEvent)
+router.get('/', Index)
+router.get('/event', eventsIndex)
+//router.post('/event', createEvent)
+//router.get('/event/:slug',specificEvent)
+//router.post('/event/:slug',addRegistration)
+//router.get('/event/:events/:user', registerDetails)
+//router.patch('/event/:events/:user',updateRegistration)
+//router.patch('/event/:slug',updateEvent)
 
 
-router.post('/login',loginCheck)
-router.get('/logout',endSession)
-*/
+//router.post('/login',loginCheck)
+//router.get('/logout',endSession)

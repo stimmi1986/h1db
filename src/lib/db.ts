@@ -1,32 +1,26 @@
 import dotenv from 'dotenv';
 import pg ,{ QueryResult }  from 'pg';
-import { readFile } from 'fs/promises';
-
-const SCHEMA_FILE = './sql/schema.sql';
-const DROP_SCHEMA_FILE = './sql/drop.sql';
+import { Event, eventsMapper } from '../routes/types'
 
 dotenv.config({ path: '.env' });
 
+const { DATABASE_URL: connectionString } = process.env;
 
-const { DATABASE_URL: connectionString} =
-  process.env;
-
-if (!connectionString) {
-  console.error('vantar DATABASE_URL í .env');
-  process.exit(-1);
-}
-
-const pool = new pg.Pool({ connectionString})
+const pool = new pg.Pool({ connectionString })
 
 pool.on('error', (err: Error) => {
     console.error('Villa í tengingu við gagnagrunn, forrit hættir', err);
     process.exit(-1);
 });
 
-type QueryInput = string | number | null;
+//type QueryInput = string | number | null;
 
-export async function query(q: string, values: Array<QueryInput>) {
-  let client: pg.PoolClient;
+export async function query(
+  q: string, 
+  values: Array<unknown> = []
+) {
+
+  let client;
   try {
     client = await pool.connect();
   } catch (e) {
@@ -38,25 +32,41 @@ export async function query(q: string, values: Array<QueryInput>) {
     const result = await client.query(q, values);
     return result;
   } catch (e) {
-    /*
-    if (nodeEnv !== 'test') {
-      console.error('unable to query', e);
-    }*/
     return null;
   } finally {
     client.release();
   }
 }
 
-export async function createSchema(schemaFile = SCHEMA_FILE) {
-  const data = await readFile(schemaFile);
+export async function getEvent(): Promise<Array<Event>> {
+  const result = await query('SELECT * FROM events');
 
-  return query(data.toString('utf-8'),[]);
+  if (!result) {
+    return [];
+  }
+  
+  const events = result.rows.map(eventsMapper).filter((d): d is Event => d !== null).map((d) => {
+    
+    return d;
+  });
+  
+  return events;
 }
 
-export async function dropSchema(dropFile = DROP_SCHEMA_FILE) {
-  const data = await readFile(dropFile);
-  return query(data.toString('utf-8'),[]);
+export async function getEventBySlug(
+  slug: string,
+): Promise<Event | null> {
+  const result = await query('SELECT * FROM department WHERE slug = $1', [ 
+    slug,
+  ]);
+
+  if (!result) {
+    return null;
+  }
+
+  const department = eventsMapper(result.rows[0]);
+  
+  return department;
 }
 
 /*
@@ -71,10 +81,7 @@ export async function insertEvent(input:Event):Promise<Event|null>{
         ($1,$2)
     RETURNING id`;
 
-}
-
-export async function end() {
-  await pool.end();
+  }
 }
 */
 
