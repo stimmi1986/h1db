@@ -4,12 +4,11 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-      "dev": "dotenv -e .env -- nodemon",
-      "dev2": "nodemon ./src/app.ts",
+      "setup": "node --loader ts-node/esm ./src/setup.ts",
+      "dev": "nodemon",
       "start": "node --loader ts-node/esm ./src/app.ts",
-      "setup": "dotenv -e .env -- node --loader ts-node/esm ./src/setup/setup.ts",
-      "conf": "ts-jest config:init",
-      "test": "NODE_ENV=test NODE_OPTIONS='--experimental-vm-modules' dotenv -e .env.test -- jest ./*.test.ts"
+      "lint": "eslint ./scr",
+      "test": "jest"
     },
     "keywords": [],
     "author": "",

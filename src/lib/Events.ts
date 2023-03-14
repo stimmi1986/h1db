@@ -1,76 +1,55 @@
 import { QueryResult } from "pg";
 import slugify from 'slugify';
+import { Event, eventsMapper } from '../routes/types'
+import { NextFunction, Request,Response } from 'express';
+import { getEvent, getEventBySlug } from '../lib/db'
 
 
+export async function eventsIndex(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) {
+    const event = await getEvent();
 
-export type Event = {
-    id: number;
-    name: string;
-    slug: string;
-    location?:string;
-    url?: string;
-    description?: string;
-    created: Date;
-    updated: Date;
-}
-type importEvent = {
-    name:string;
-    location?:string;
-    url?:string;
-    description?:string;
-}
-
-export function importEventToEvent(input:unknown):Omit<Event,'id'>|null{
-    const potEvent = input as Partial<importEvent> |null;
-    if(!potEvent||!potEvent.name){
-        return null;
+    if (!event) {
+        return next(new Error('unable to get event'));
     }
-    const event: Omit<Event,'id'>={
-        name: potEvent.name,
-        slug: slugify(potEvent.name).toLowerCase(),
-        url: potEvent.url? potEvent.url : undefined,
-        description: potEvent.description? potEvent.description : undefined,
-        created: new Date(),
-        updated: new Date(),
-    };
-    return event
 
+    return res.json(event);
 }
+
+export async function getEvents(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) {
+    const { slug } = req.params;
+
+    const department = await getEventBySlug(slug);
+
+    if (!department) {
+        return next();
+    }
+
+    return res.json(department);
+}
+
+
 export function mapDbEventToEvent(input: QueryResult<Event>| null): Event | null {
     if (!input){
         return null;
     }
 
-    return eventMapper(input);
+    return eventsMapper(input);
 }
 export function mapDbEventsToEvents(
     input:QueryResult<Event>|null):Array<Event>{
     if (!input) {
         return [];
     }
-    const mappedEvents = input?.rows.map(eventMapper);
+    const mappedEvents = input?.rows.map(eventsMapper);
 
     return mappedEvents.filter((i): i is Event=>Boolean(i));
 }
 
-function eventMapper(input: unknown): Event | null {
-    const potentialEvent = input as Partial<Event> | null
-    if(!potentialEvent
-        ||!potentialEvent.id
-        ||!potentialEvent.name
-        ||!(potentialEvent.slug)
-        ||!potentialEvent.created
-        ||!potentialEvent.updated){
-        return null;
-    }
-
-    const event: Event={
-        id: potentialEvent.id,
-        name: potentialEvent.name,
-        slug: potentialEvent.slug,
-        created: new Date(potentialEvent.created),
-        updated: new Date(potentialEvent.updated),
-    };
-
-return event;
-}
