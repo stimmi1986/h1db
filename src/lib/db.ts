@@ -93,7 +93,6 @@ export async function getRegistrations(event:number):Promise<Array<Regi>|null>{
 }
 export async function updateRegistration(event:number,username:string,comment:string):Promise<Regi|null>{
   console.log(event,username,comment)
-  const updated = new Date()
   const result = await query(`
   update registrations 
   set comment='${comment}', updated = CURRENT_TIMESTAMP
