@@ -43,12 +43,18 @@ export async function patchRegistration(
     next: NextFunction,){
     const {slug,username} = req.params
     const {comment} = req.body
-    const id = await query('select id from events where slug = $1',[slug])
+    const id = await query('select id from events where slug = $1;',[slug])
     if(!id||id.rowCount==0){
-      return null
+        console.error("vandamál með að finna viðburð")
+      return next()
     }
     const result = await updateRegistration(id.rows[0].id,username,comment)
+    if(!result){
+        console.error("vandamál með að uppfæra skráningu")
+        return next()
     }
+    res.json(result)
+}
 
 
 

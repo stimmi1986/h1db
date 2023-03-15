@@ -1,7 +1,7 @@
 import express, {Request, Response, NextFunction} from 'express';
 import { getRegistrations } from '../lib/db.js';
 import { eventsIndex, /*createEvent, specificEvent, updateEvent*/ } from '../lib/Events.js'
-import { getEventRegistrations } from '../lib/Registrations.js';
+import { getEventRegistrations, patchRegistration } from '../lib/Registrations.js';
 
 
 
@@ -32,6 +32,7 @@ export async function Index(req: Request, res: Response) {
 router.get('/', Index)
 router.get('/event', eventsIndex)
 router.get('/event/:slug',getEventRegistrations)
+router.post('/event/:slug/:username',patchRegistration)
 //router.post('/event', createEvent)
 //router.get('/event/:slug',specificEvent)
 //router.post('/event/:slug',addRegistration)

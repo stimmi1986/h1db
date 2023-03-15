@@ -85,6 +85,7 @@ export type Regi = {
   comment: string;
   username: string;
   event: string;
+  updated: Date;
   created: Date;
 };
 
@@ -103,7 +104,8 @@ if (
   !potentialRegi.comment ||
   !potentialRegi.username ||
   !potentialRegi.event ||
-  !potentialRegi.created 
+  !potentialRegi.created ||
+  !potentialRegi.updated
 ) {
   return null;
 }
@@ -115,6 +117,7 @@ const regi: Regi = {
   username: potentialRegi.username,
   event: potentialRegi.event,
   created: new Date(potentialRegi.created),
+  updated: new Date(potentialRegi.updated)
   
 };
 

@@ -92,14 +92,16 @@ export async function getRegistrations(event:number):Promise<Array<Regi>|null>{
   return regis
 }
 export async function updateRegistration(event:number,username:string,comment:string):Promise<Regi|null>{
+  console.log(event,username,comment)
+  const updated = new Date()
   const result = await query(`
   update registrations 
-  set comment=${comment}
-  where event=$1 and username = $2 returning *`,[event,username])
+  set comment='${comment}', updated = CURRENT_TIMESTAMP
+  where event=$1 and username like $2 returning *;`,[event,username])
   if(!result){
     return null
   }
-  return DbRegiToRegi(result)
+  return DbRegiToRegi(result.rows[0])
 }
 
 /*
