@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import pg ,{ QueryResult }  from 'pg';
 import { Event, eventsMapper, Regi, RegisMapper } from '../routes/types.js'
 import { readFile } from 'fs/promises';
-import { DbRegisToRegis } from './Registrations.js';
+import { DbRegisToRegis, DbRegiToRegi } from './Registrations.js';
 
 const SCHEMA_FILE = './sql/schema.sql';
 const DROP_SCHEMA_FILE = './sql/drop.sql';
@@ -90,6 +90,16 @@ export async function getRegistrations(event:number):Promise<Array<Regi>|null>{
   }
   const regis = DbRegisToRegis(result)
   return regis
+}
+export async function updateRegistration(event:number,username:string,comment:string):Promise<Regi|null>{
+  const result = await query(`
+  update registrations 
+  set comment=${comment}
+  where event=$1 and username = $2 returning *`,[event,username])
+  if(!result){
+    return null
+  }
+  return DbRegiToRegi(result)
 }
 
 /*
