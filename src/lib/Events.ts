@@ -1,8 +1,8 @@
 import { QueryResult } from "pg";
 import slugify from 'slugify';
-import { Event, eventsMapper } from '../routes/types'
+import { Event, eventsMapper } from '../routes/types.js'
 import { NextFunction, Request,Response } from 'express';
-import { getEvent, getEventBySlug } from '../lib/db'
+import { getEvent, getEventBySlug } from '../lib/db.js'
 
 
 export async function eventsIndex(

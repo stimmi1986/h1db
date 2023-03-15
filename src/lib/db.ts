@@ -1,7 +1,8 @@
 import dotenv from 'dotenv';
 import pg ,{ QueryResult }  from 'pg';
-import { Event, eventsMapper } from '../routes/types'
+import { Event, eventsMapper, Regi, RegisMapper } from '../routes/types.js'
 import { readFile } from 'fs/promises';
+import { DbRegisToRegis } from './Registrations.js';
 
 const SCHEMA_FILE = './sql/schema.sql';
 const DROP_SCHEMA_FILE = './sql/drop.sql';
@@ -70,7 +71,7 @@ export async function getEvent(): Promise<Array<Event>> {
 export async function getEventBySlug(
   slug: string,
 ): Promise<Event | null> {
-  const result = await query('SELECT * FROM department WHERE slug = $1', [ 
+  const result = await query('SELECT * FROM events WHERE slug = $1', [ 
     slug,
   ]);
 
@@ -81,6 +82,14 @@ export async function getEventBySlug(
   const department = eventsMapper(result.rows[0]);
   
   return department;
+}
+export async function getRegistrations(event:number):Promise<Array<Regi>|null>{
+  const result = await query('select * from registrations where event=$1',[event]);
+  if(!result){
+    return null
+  }
+  const regis = DbRegisToRegis(result)
+  return regis
 }
 
 /*

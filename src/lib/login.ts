@@ -1,7 +1,7 @@
 import passport from 'passport';
 import { Strategy } from 'passport-local';
-import { User } from '../routes/types';
-import { comparePasswords, findById, findByUsername } from './Users';
+import { User } from '../routes/types.js';
+import { comparePasswords, findById, findByUsername } from './Users.js';
 
 /**
  * Athugar hvort username og password sé til í notandakerfi.
@@ -39,6 +39,7 @@ passport.use(new Strategy(strat));
 
 //þurfum að lagfæra eftirfarandi villur
 passport.serializeUser((user, done) => {
+  
   done(null, user.id);
 });
 
