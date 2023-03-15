@@ -1,6 +1,6 @@
 import { Regi,RegisMapper,importRegi } from "../routes/types.js";
 import { NextFunction, Request,Response } from 'express';
-import { getEvent, getEventBySlug, getRegistrations, query } from '../lib/db.js'
+import { getEvent, getEventBySlug, getRegistrations, query, updateRegistration } from '../lib/db.js'
 import { QueryResult } from "pg";
 
 /*
@@ -37,6 +37,19 @@ export async function getEventRegistrations(
 
     return res.json(result);
 }
+export async function patchRegistration(
+    req: Request,
+    res: Response,
+    next: NextFunction,){
+    const {slug,username} = req.params
+    const {comment} = req.body
+    const id = await query('select id from events where slug = $1',[slug])
+    if(!id||id.rowCount==0){
+      return null
+    }
+    const result = await updateRegistration(id.rows[0].id,username,comment)
+    }
+
 
 
 export function DbRegiToRegi(input: QueryResult<Regi>| null): Regi | null {
