@@ -102,6 +102,14 @@ export async function updateRegistration(event:number,username:string,comment:st
   }
   return DbRegiToRegi(result.rows[0])
 }
+export async function removeRegistration(event:number,username:string):Promise<boolean>{
+  const result = await query(`delete registrations
+  where event =$1 and username like $2 returning 1`,[event,username])
+  if(!result||result.rowCount===0){
+    return false
+  }return true
+
+}
 
 /*
 export async function insertEvent(input:Event):Promise<Event|null>{
