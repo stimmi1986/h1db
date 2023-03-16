@@ -31,7 +31,7 @@ pool.on('error', (err: Error) => {
 
 export async function query(
   q: string, 
-  values: Array<unknown> = []
+  values: Array<unknown>|any = []
 ) {
 
   let client;

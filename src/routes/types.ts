@@ -47,13 +47,14 @@ export type User = {
   id?: number;
   name: string;
   username: string;
-  password: string;
-  admin: string;
+  password?: string;
+  admin: Boolean;
 };
 
 export type UsersInsert = {
   name: string;
   username: string;
+  password: string;
 }
 
 export function userMapper(input: unknown): User | null {

@@ -59,3 +59,17 @@ export async function createUser(name:string, username:string, password:string):
 
   return null;
 }
+
+export async function isAdmin(username: string) {
+  const q = `
+    SELECT admin
+    FROM users
+    WHERE username = $1;
+  `;
+  try {
+    const result = await query(q, username);
+    return result.rows[0];
+  } catch (error) {
+    console.error('Finnur ekki notanda.');
+  }
+}
