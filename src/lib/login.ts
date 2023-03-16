@@ -1,8 +1,7 @@
 import passport from 'passport';
 import { Strategy } from 'passport-local';
-import { User } from '../routes/types.js';
-import { comparePasswords, findById, findByUsername } from './Users.js';
-import { Request, Response, NextFunction } from 'express';
+import { User } from '../routes/types';
+import { comparePasswords, findById, findByUsername } from './Users';
 
 /**
  * Athugar hvort username og password sé til í notandakerfi.
@@ -40,7 +39,6 @@ passport.use(new Strategy(strat));
 
 //þurfum að lagfæra eftirfarandi villur
 passport.serializeUser((user, done) => {
-  
   done(null, user.id);
 });
 
@@ -60,7 +58,7 @@ passport.deserializeUser(async (id:number, done) => {
 
 // Hjálpar middleware sem athugar hvort notandi sé innskráður og hleypir okkur
 // þá áfram, annars sendir á /login
-export function ensureLoggedIn(req: Request, res: Response, next: NextFunction) {
+export function ensureLoggedIn(req : Request, res : Response, next : NextFunction) {
   if (req.isAuthenticated()) {
     return next();
   }
@@ -68,7 +66,7 @@ export function ensureLoggedIn(req: Request, res: Response, next: NextFunction) 
   return res.redirect('/login');
 }
 
-export function ensureAdmin(req: Request, res: Response, next: NextFunction) {
+export function ensureAdmin(req, res, next) {
   if (req.isAuthenticated() && req.user?.admin) {
     return next();
   }
