@@ -2,7 +2,6 @@ import passport from 'passport';
 import { Strategy } from 'passport-local';
 import { User } from '../routes/types';
 import { comparePasswords, findById, findByUsername } from './Users';
-import express, {Request, Response, NextFunction} from 'express';
 
 /**
  * Athugar hvort username og password sé til í notandakerfi.
@@ -39,7 +38,7 @@ passport.use(new Strategy(strat));
 // Geymum id á notanda í session, það er nóg til að vita hvaða notandi þetta er
 
 //þurfum að lagfæra eftirfarandi villur
-passport.serializeUser((user:any, done) => {
+passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
@@ -67,7 +66,7 @@ export function ensureLoggedIn(req : Request, res : Response, next : NextFunctio
   return res.redirect('/login');
 }
 
-export function ensureAdmin(req : Request, res : Response, next : NextFunction) {
+export function ensureAdmin(req, res, next) {
   if (req.isAuthenticated() && req.user?.admin) {
     return next();
   }

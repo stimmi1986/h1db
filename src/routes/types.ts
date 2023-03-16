@@ -4,8 +4,8 @@ export type Event = {
     name: string;
     slug: string;
     description?: string;
-    created: Date;
-    updated: Date;
+    created?: Date;
+    updated?: Date;
 };
 
 export type importEvent = {
@@ -14,7 +14,7 @@ export type importEvent = {
   description?: string;
 }
 
-export function eventsMapper(input: unknown): Event | null {
+export function eventMapper(input: unknown): Event | null {
   const potentialEvent = input as Partial<Event> | null;
 
   if (
@@ -44,7 +44,7 @@ export function eventsMapper(input: unknown): Event | null {
 
 // User
 export type User = {
-  id?: number;
+  id: number;
   name: string;
   username: string;
   password?: string;
@@ -86,6 +86,7 @@ export type Regi = {
   comment: string;
   username: string;
   event: string;
+  updated: Date;
   created: Date;
 };
 
@@ -104,7 +105,8 @@ if (
   !potentialRegi.comment ||
   !potentialRegi.username ||
   !potentialRegi.event ||
-  !potentialRegi.created 
+  !potentialRegi.created ||
+  !potentialRegi.updated
 ) {
   return null;
 }
@@ -116,6 +118,7 @@ const regi: Regi = {
   username: potentialRegi.username,
   event: potentialRegi.event,
   created: new Date(potentialRegi.created),
+  updated: new Date(potentialRegi.updated)
   
 };
 
