@@ -1,7 +1,7 @@
 import passport from 'passport';
 import { Strategy } from 'passport-local';
-import { User } from '../routes/types';
-import { comparePasswords, findById, findByUsername } from './Users';
+import { User } from '../routes/types.js';
+import { comparePasswords, findById, findByUsername } from './Users.js';
 import { Request, Response, NextFunction } from 'express';
 
 /**

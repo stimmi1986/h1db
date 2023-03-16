@@ -5,7 +5,7 @@ import {
   getEvent,
   listEvents,
   updateEvent,
-} from '../lib/Events';
+} from '../lib/Events.js';
 
 import { getRegistrations } from '../lib/db.js';
 

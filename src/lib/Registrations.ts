@@ -1,6 +1,6 @@
 import { Regi,RegisMapper,importRegi } from "../routes/types.js";
 import { NextFunction, Request,Response } from 'express';
-import { getEvent, getEventBySlug, getRegistrations, query, removeRegistration, updateRegistration } from '../lib/db.js'
+import { getEvents, getEventBySlug, getRegistrations, query, removeRegistration, updateRegistration } from '../lib/db.js'
 import { QueryResult } from "pg";
 
 /*

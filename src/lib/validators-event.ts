@@ -6,7 +6,7 @@ import xss from 'xss';
 
 import {
   getEventBySlug,
-} from './db';
+} from './db.js';
 
 /**
  * Checks to see if there are validation errors or returns next middlware if not.
@@ -107,7 +107,7 @@ export const stringValidator = ({
 
 export const eventDoesNotExistValidator = body('name').custom(
   async (name) => {
-    if (await getEventBySlug(slugify(name))) {
+    if (await getEventBySlug(slugify(name, '-'))) {
       return Promise.reject(new Error('event with name already exists'));
     }
     return Promise.resolve();

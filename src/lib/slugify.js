@@ -1,4 +1,4 @@
-export function slugify(text: string, separator: string) {
+export function slugify(text, separator) {
     if (typeof text !== 'string') {
       return null;
     }
