@@ -85,7 +85,7 @@ export type Regi = {
   name: string;
   comment: string;
   username: string;
-  event: string;
+  event: number;
   updated: Date;
   created: Date;
 };

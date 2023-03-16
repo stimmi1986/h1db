@@ -91,17 +91,7 @@ export async function getRegistrations(event:number):Promise<Array<Regi>|null>{
   const regis = DbRegisToRegis(result)
   return regis
 }
-export async function updateRegistration(event:number,username:string,comment:string):Promise<Regi|null>{
-  console.log(event,username,comment)
-  const result = await query(`
-  update registrations 
-  set comment='${comment}', updated = CURRENT_TIMESTAMP
-  where event=$1 and username like $2 returning *;`,[event,username])
-  if(!result){
-    return null
-  }
-  return DbRegiToRegi(result.rows[0])
-}
+
 export async function removeRegistration(event:number,username:string):Promise<boolean>{
   const result = await query(`delete registrations
   where event =$1 and username like $2 returning 1`,[event,username])
@@ -150,15 +140,17 @@ export async function insertEvent(input:Event):Promise<Event|null>{
 }
 */
 export async function conditionalUpdate(
-  table: 'events',
+  table: string,
   id: number,
   fields: Array<string | null>,
   values: Array<string | number | null>,
 ) {
   const filteredFields = fields.filter((i) => typeof i === 'string');
+  console.log(filteredFields)
   const filteredValues = values.filter(
     (i): i is string | number => typeof i === 'string' || typeof i === 'number',
   );
+  console.log(filteredValues)
 
   if (filteredFields.length === 0) {
     return false;
