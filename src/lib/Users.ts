@@ -65,8 +65,8 @@ export async function createAdmin(username:string, password: string){
 
   const q = `
   INSERT INTO
-  users (username, password)
-    VALUES ($1, $2)
+  users (username, password, admin)
+    VALUES ($1, $2, true)
   RETURNING *
   `;
   try {
