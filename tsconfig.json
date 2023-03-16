@@ -8,6 +8,6 @@
       "moduleResolution": "node",
       "forceConsistentCasingInFileNames": true
     },
-    "include": ["**/*.ts", "src/ddsetup.js"],
+    "include": ["**/*.ts", "src/setup.js", "src/lib/slugify.js"],
     "exclude": ["node_modules", "**/*.spec.ts"]
   }

@@ -6,7 +6,7 @@ import {
   getEventBySlug,
   getEvents,
   insertEvent,
-} from '../lib/db';
+} from '../lib/db.js';
 
 import {
   atLeastOneBodyValueValidator,
@@ -15,8 +15,8 @@ import {
   stringValidator,
   validationCheck,
   xssSanitizer,
-} from '../lib/validators-event';
-import { Event, eventMapper } from '../routes/types';
+} from '../lib/validators-event.js';
+import { Event, eventMapper } from '../routes/types.js';
 
 export async function listEvents(
   req: Request,
@@ -57,7 +57,7 @@ export async function createEventHandler(
 
   const eventToCreate: Omit<Event, 'id'> = {
     name,
-    slug: slugify(name),
+    slug: slugify(name, '-'),
     description,
     created: new Date,
     updated: new Date,
@@ -125,7 +125,7 @@ export async function updateEventHandler(
 
   const values = [
     typeof name === 'string' && name ? name : null,
-    typeof name === 'string' && name ? slugify(name).toLowerCase() : null,
+    typeof name === 'string' && name ? slugify(name, '-').toLowerCase() : null,
     typeof description === 'string' && description ? description : null,
   ];
 

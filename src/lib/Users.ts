@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import { QueryResult } from 'pg';
-import { User } from '../routes/types';
-import { query } from './db';
+import { User } from '../routes/types.js';
+import { query } from './db.js';
 
 export async function comparePasswords(password:string, hash:string):Promise<boolean>  {
   try {
