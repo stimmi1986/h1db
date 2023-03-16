@@ -1,7 +1,8 @@
 import { Regi,RegisMapper,importRegi } from "../routes/types.js";
 import { NextFunction, Request,Response } from 'express';
-import { getEvents, getEventBySlug, getRegistrations, query, removeRegistration, updateRegistration } from '../lib/db.js'
+import { getEvents, getEventBySlug, getRegistrations, query, removeRegistration, conditionalUpdate } from '../lib/db.js'
 import { QueryResult } from "pg";
+import { atLeastOneBodyValueValidator, stringValidator, validationCheck, xssSanitizer } from "./validators-event.js";
 
 /*
 export async function eventsIndex(
@@ -37,23 +38,55 @@ export async function getEventRegistrations(
 
     return res.json(result);
 }
-export async function patchRegistration(
+export const patchRegistration = [
+    stringValidator({ field: 'name', maxLength: 64, optional: true }),
+    stringValidator({
+      field: 'comment',
+      valueRequired: false,
+      maxLength: 1000,
+      optional: true,
+    }),
+    atLeastOneBodyValueValidator(['name', 'comment']),
+    xssSanitizer('name'),
+    xssSanitizer('comment'),
+    validationCheck,
+    patchRegistrationHandler,
+  ];
+export async function patchRegistrationHandler(
     req: Request,
     res: Response,
     next: NextFunction,){
     const {slug,username} = req.params
-    const {comment} = req.body
     const id = await query('select id from events where slug = $1;',[slug])
-    if(!id||id.rowCount==0){
+    if(!id){
         console.error("vandamál með að finna viðburð")
-      return next()
+      return next(new Error('Event not Found'))
     }
-    const result = await updateRegistration(id.rows[0].id,username,comment)
-    if(!result){
-        console.error("vandamál með að uppfæra skráningu")
-        return next()
+    const {name,comment} = req.body
+    const fields = [
+        typeof name === 'string' && name ? 'name':null,
+        typeof comment === 'string' && comment ? 'comment':null,
+    ]
+    const values = [
+        typeof name === 'string' && name ? name : null,
+        typeof comment === 'string' && comment ? comment:null,
+    ]
+    try{
+        const updated = await conditionalUpdate(
+            'registrations',
+            id.rows[0].id,
+            fields,
+            values
+        );
+        if (!updated){
+            return next(new Error('unable to update registration'));
+        }
+        const updatedRegi = RegisMapper(updated.rows[0]);
+        return res.json(updatedRegi);
+    }catch (err){
+        console.error('Error updating registration:',err);
+        return next(new Error('unable to update registration'))
     }
-    res.json(result)
 }
 export async function deleteRegistration(
     req:Request,

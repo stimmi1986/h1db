@@ -39,19 +39,14 @@ export async function index(req: Request, res: Response) {
 
 router.get('/', index) // virkar 
 router.get('/event', listEvents); // virkar 
-router.post('/event', createEvent); // á að virka ?????
+router.post('/event', createEvent); // virkar
 router.get('/event/:slug', getEvent); // virkar
 router.patch('/event/:slug', updateEvent); // á að virka ????
 router.delete('/event/:slug', deleteEvent); // virkar en ekki sem er með id 1 
 
-
-
-
-// router.get('/event', eventsIndex) //er þetta ekki sama og listEvents?????
-
-router.get('/event/:slug',getEventRegistrations)
-router.patch('/event/:slug/:username',patchRegistration)
-router.delete('/event/:slug/:username',deleteRegistration)
+router.get('/event/:slug/regis',getEventRegistrations)
+router.patch('/event/:slug/regis/:username',patchRegistration)
+router.delete('/event/:slug/regis/:username',deleteRegistration)
 
 //router.post('/event/:slug',addRegistration)
 //router.get('/event/:events/:user', registerDetails)
