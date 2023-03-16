@@ -1,55 +1,166 @@
-import { QueryResult } from "pg";
+import { NextFunction, Request, Response } from 'express';
 import slugify from 'slugify';
-import { Event, eventsMapper } from '../routes/types'
-import { NextFunction, Request,Response } from 'express';
-import { getEvent, getEventBySlug } from '../lib/db'
+import {
+  conditionalUpdate,
+  deleteEventBySlug,
+  getEventBySlug,
+  getEvents,
+  insertEvent,
+} from '../lib/db';
 
+import {
+  atLeastOneBodyValueValidator,
+  eventDoesNotExistValidator,
+  genericSanitizer,
+  stringValidator,
+  validationCheck,
+  xssSanitizer,
+} from '../lib/validators-event';
+import { Event, eventMapper } from '../routes/types';
 
-export async function eventsIndex(
-    req: Request,
-    res: Response,
-    next: NextFunction,
+export async function listEvents(
+  req: Request,
+  res: Response,
+  next: NextFunction,
 ) {
-    const event = await getEvent();
+  const event = await getEvents();
 
-    if (!event) {
-        return next(new Error('unable to get event'));
-    }
+  if (!event) {
+    return next(new Error('unable to get event'));
+  }
 
-    return res.json(event);
+  return res.json(event);
 }
 
-export async function getEvents(
-    req: Request,
-    res: Response,
-    next: NextFunction,
+export async function getEvent(
+  req: Request,
+  res: Response,
+  next: NextFunction,
 ) {
-    const { slug } = req.params;
+  const { slug } = req.params;
 
-    const department = await getEventBySlug(slug);
+  const event = await getEventBySlug(slug);
 
-    if (!department) {
-        return next();
-    }
+  if (!event) {
+    return next();
+  }
 
-    return res.json(department);
+  return res.json(event);
 }
 
+export async function createEventHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  const { name, description } = req.body;
 
-export function mapDbEventToEvent(input: QueryResult<Event>| null): Event | null {
-    if (!input){
-        return null;
-    }
+  const eventToCreate: Omit<Event, 'id'> = {
+    name,
+    slug: slugify(name),
+    description,
+    created: new Date,
+    updated: new Date,
+  };
 
-    return eventsMapper(input);
+  const createdEvent = await insertEvent(eventToCreate);
+console.log(createdEvent)
+  if (!createdEvent) {
+    return next(new Error('unable to create department'));
+  }
+
+  return res.status(201).json(createdEvent);
 }
-export function mapDbEventsToEvents(
-    input:QueryResult<Event>|null):Array<Event>{
-    if (!input) {
-        return [];
-    }
-    const mappedEvents = input?.rows.map(eventsMapper);
 
-    return mappedEvents.filter((i): i is Event=>Boolean(i));
+export const createEvent = [
+  stringValidator({ field: 'name', maxLength: 64 }),
+  stringValidator({
+    field: 'description',
+    valueRequired: false,
+    maxLength: 1000,
+  }),
+  eventDoesNotExistValidator,
+  xssSanitizer('name'),
+  xssSanitizer('description'),
+  validationCheck,
+  genericSanitizer('name'),
+  genericSanitizer('description'),
+  createEventHandler,
+];
+
+export const updateEvent = [
+  stringValidator({ field: 'name', maxLength: 64, optional: true }),
+  stringValidator({
+    field: 'description',
+    valueRequired: false,
+    maxLength: 1000,
+    optional: true,
+  }),
+  atLeastOneBodyValueValidator(['name', 'description']),
+  xssSanitizer('name'),
+  xssSanitizer('description'),
+  validationCheck,
+  updateEventHandler,
+];
+
+export async function updateEventHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  const { slug } = req.params;
+  const event = await getEventBySlug(slug);
+
+  if (!event) {
+    return next();
+  }
+
+  const { name, description } = req.body;
+
+  const fields = [
+    typeof name === 'string' && name ? 'name' : null,
+    typeof name === 'string' && name ? 'slug' : null,
+    typeof description === 'string' && description ? 'description' : null,
+  ];
+
+  const values = [
+    typeof name === 'string' && name ? name : null,
+    typeof name === 'string' && name ? slugify(name).toLowerCase() : null,
+    typeof description === 'string' && description ? description : null,
+  ];
+
+  const updated = await conditionalUpdate(
+    'event',
+    event.id,
+    fields,
+    values,
+  );
+
+  if (!updated) {
+    return next(new Error('unable to update event'));
+  }
+
+  const updatedEvent = eventMapper(updated.rows[0]);
+  return res.json(updatedEvent);
 }
 
+export async function deleteEvent(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  const { slug } = req.params;
+  const event = await getEventBySlug(slug);
+console.log(slug) 
+  if (!event) {
+    return next();
+  }
+
+  const result = await deleteEventBySlug(slug);
+console.log(slug)
+  if (!result) {
+    return next(new Error('unable to delete event'));
+  }
+
+  return res.status(204).json({});
+}

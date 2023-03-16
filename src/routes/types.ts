@@ -4,8 +4,8 @@ export type Event = {
     name: string;
     slug: string;
     description?: string;
-    created: Date;
-    updated: Date;
+    created?: Date;
+    updated?: Date;
 };
 
 export type importEvent = {
@@ -14,7 +14,7 @@ export type importEvent = {
   description?: string;
 }
 
-export function eventsMapper(input: unknown): Event | null {
+export function eventMapper(input: unknown): Event | null {
   const potentialEvent = input as Partial<Event> | null;
 
   if (
@@ -44,10 +44,10 @@ export function eventsMapper(input: unknown): Event | null {
 
 // User
 export type User = {
-  id?: number;
+  id: number;
   name: string;
   username: string;
-  password: string;
+  password?: string;
   admin: string;
 };
 

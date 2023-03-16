@@ -2,6 +2,7 @@ import passport from 'passport';
 import { Strategy } from 'passport-local';
 import { User } from '../routes/types';
 import { comparePasswords, findById, findByUsername } from './Users';
+import { Request, Response, NextFunction } from 'express';
 
 /**
  * Athugar hvort username og password sé til í notandakerfi.
@@ -58,7 +59,7 @@ passport.deserializeUser(async (id:number, done) => {
 
 // Hjálpar middleware sem athugar hvort notandi sé innskráður og hleypir okkur
 // þá áfram, annars sendir á /login
-export function ensureLoggedIn(req, res, next) {
+export function ensureLoggedIn(req: Request, res: Response, next: NextFunction) {
   if (req.isAuthenticated()) {
     return next();
   }
@@ -66,7 +67,7 @@ export function ensureLoggedIn(req, res, next) {
   return res.redirect('/login');
 }
 
-export function ensureAdmin(req, res, next) {
+export function ensureAdmin(req: Request, res: Response, next: NextFunction) {
   if (req.isAuthenticated() && req.user?.admin) {
     return next();
   }
