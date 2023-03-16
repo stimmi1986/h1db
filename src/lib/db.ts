@@ -150,7 +150,7 @@ export async function insertEvent(input:Event):Promise<Event|null>{
 }
 */
 export async function conditionalUpdate(
-  table: 'event' | 'regi',
+  table: 'events',
   id: number,
   fields: Array<string | null>,
   values: Array<string | number | null>,

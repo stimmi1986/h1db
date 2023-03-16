@@ -110,7 +110,6 @@ export async function updateEventHandler(
 ) {
   const { slug } = req.params;
   const event = await getEventBySlug(slug);
-
   if (!event) {
     return next();
   }
@@ -122,26 +121,28 @@ export async function updateEventHandler(
     typeof name === 'string' && name ? 'slug' : null,
     typeof description === 'string' && description ? 'description' : null,
   ];
-
   const values = [
     typeof name === 'string' && name ? name : null,
     typeof name === 'string' && name ? slugify(name, '-').toLowerCase() : null,
     typeof description === 'string' && description ? description : null,
   ];
 
-  const updated = await conditionalUpdate(
-    'event',
-    event.id,
-    fields,
-    values,
-  );
-
-  if (!updated) {
+  try {
+    const updated = await conditionalUpdate(
+      'events',
+      event.id,
+      fields,
+      values,
+    );
+    if (!updated) {
+      return next(new Error('unable to update event'));
+    }
+    const updatedEvent = eventMapper(updated.rows[0]);
+    return res.json(updatedEvent);
+  } catch (err) {
+    console.error('Error updating event:', err);
     return next(new Error('unable to update event'));
   }
-
-  const updatedEvent = eventMapper(updated.rows[0]);
-  return res.json(updatedEvent);
 }
 
 export async function deleteEvent(
