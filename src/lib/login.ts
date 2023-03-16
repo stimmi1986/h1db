@@ -40,7 +40,6 @@ passport.use(new Strategy(strat));
 
 //þurfum að lagfæra eftirfarandi villur
 passport.serializeUser((user, done) => {
-  
   done(null, user.id);
 });
 

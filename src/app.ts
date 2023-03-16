@@ -1,8 +1,19 @@
 import express, { NextFunction, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import { router } from './routes/api.js';
+import { createAdmin, isAdmin } from './lib/Users.js';
 
 dotenv.config();
+
+declare global {
+  namespace Express {
+    interface User {
+      username: string;
+      id?: number;
+      admin: Boolean;
+    }
+  }
+}
 
 const app = express();
 
@@ -30,6 +41,5 @@ function errorHandler(err: Error , req: Request, res:Response, next: NextFunctio
 
   return res.status(500).json({ error: 'Internal server error' });
 }
-
 app.use(notFoundHandler);
 app.use(errorHandler);

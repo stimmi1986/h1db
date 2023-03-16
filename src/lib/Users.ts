@@ -67,7 +67,7 @@ export async function createAdmin(username:string, password: string){
   INSERT INTO
   users (username, password, admin)
     VALUES ($1, $2, true)
-  RETURNING *
+  RETURNING *;
   `;
   try {
     const result = await query(q, [username, hashedPassword]);

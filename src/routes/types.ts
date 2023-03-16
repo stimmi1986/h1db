@@ -44,7 +44,7 @@ export function eventMapper(input: unknown): Event | null {
 
 // User
 export type User = {
-  id: number;
+  id?: number;
   name: string;
   username: string;
   password?: string;
