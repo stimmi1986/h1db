@@ -32,7 +32,7 @@ pool.on('error', (err: Error) => {
 
 export async function query(
   q: string, 
-  values: Array<unknown>|any = []
+  values: any | Array<unknown> = []
 ) {
 
   let client;
@@ -67,7 +67,7 @@ export async function getEvents(): Promise<Array<Event>> {
   
   return events;
 }
-
+ 
 export async function getEventBySlug(
   slug: string,
 ): Promise<Event | null> {
