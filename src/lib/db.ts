@@ -32,7 +32,7 @@ pool.on('error', (err: Error) => {
 
 export async function query(
   q: string, 
-  values: Array<unknown>|any = []
+  values: any | Array<unknown> = []
 ) {
 
   let client;
