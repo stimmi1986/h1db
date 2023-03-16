@@ -67,7 +67,7 @@ export async function getEvents(): Promise<Array<Event>> {
   
   return events;
 }
-
+ 
 export async function getEventBySlug(
   slug: string,
 ): Promise<Event | null> {

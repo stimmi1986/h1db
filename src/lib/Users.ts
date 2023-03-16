@@ -68,8 +68,10 @@ export async function isAdmin(username: string) {
   `;
   try {
     const result = await query(q, username);
+    console.log(result.rows[0]);
     return result.rows[0];
   } catch (error) {
     console.error('Finnur ekki notanda.');
   }
 }
+ 
