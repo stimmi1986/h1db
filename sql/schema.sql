@@ -23,6 +23,7 @@ CREATE TABLE public.registrations (
   username character varying(64) NOT NULL,
   event INTEGER NOT NULL,
   created TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT event FOREIGN KEY (event) REFERENCES events (id),
   CONSTRAINT username FOREIGN KEY (username) REFERENCES users (username)
 );

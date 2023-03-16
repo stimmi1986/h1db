@@ -1,7 +1,8 @@
 import dotenv from 'dotenv';
 import pg ,{ QueryResult }  from 'pg';
-import { Event, eventMapper } from '../routes/types'
+import { Event, eventMapper, Regi, RegisMapper } from '../routes/types.js'
 import { readFile } from 'fs/promises';
+import { DbRegisToRegis, DbRegiToRegi } from './Registrations.js';
 
 const SCHEMA_FILE = './sql/schema.sql';
 const DROP_SCHEMA_FILE = './sql/drop.sql';
@@ -81,6 +82,33 @@ export async function getEventBySlug(
   const event = eventMapper(result.rows[0]);
   
   return event;
+}
+export async function getRegistrations(event:number):Promise<Array<Regi>|null>{
+  const result = await query('select * from registrations where event=$1',[event]);
+  if(!result){
+    return null
+  }
+  const regis = DbRegisToRegis(result)
+  return regis
+}
+export async function updateRegistration(event:number,username:string,comment:string):Promise<Regi|null>{
+  console.log(event,username,comment)
+  const result = await query(`
+  update registrations 
+  set comment='${comment}', updated = CURRENT_TIMESTAMP
+  where event=$1 and username like $2 returning *;`,[event,username])
+  if(!result){
+    return null
+  }
+  return DbRegiToRegi(result.rows[0])
+}
+export async function removeRegistration(event:number,username:string):Promise<boolean>{
+  const result = await query(`delete registrations
+  where event =$1 and username like $2 returning 1`,[event,username])
+  if(!result||result.rowCount===0){
+    return false
+  }return true
+
 }
 
 export async function deleteEventBySlug(slug: string): Promise<boolean> {

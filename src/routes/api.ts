@@ -7,6 +7,12 @@ import {
   updateEvent,
 } from '../lib/Events';
 
+import { getRegistrations } from '../lib/db.js';
+
+import { deleteRegistration, getEventRegistrations, patchRegistration } from '../lib/Registrations.js';
+
+
+
 export const router = express.Router();
 
 export async function index(req: Request, res: Response) {
@@ -39,13 +45,18 @@ router.patch('/event/:slug', updateEvent); // á að virka ????
 router.delete('/event/:slug', deleteEvent); // virkar en ekki sem er með id 1 
 
 
-//router.get('/event', eventsIndex)
-//router.post('/event', createEvent)
-//router.get('/event/:slug',specificEvent)
+
+
+// router.get('/event', eventsIndex) //er þetta ekki sama og listEvents?????
+
+router.get('/event/:slug',getEventRegistrations)
+router.patch('/event/:slug/:username',patchRegistration)
+router.delete('/event/:slug/:username',deleteRegistration)
+
 //router.post('/event/:slug',addRegistration)
 //router.get('/event/:events/:user', registerDetails)
 //router.patch('/event/:events/:user',updateRegistration)
-//router.patch('/event/:slug',updateEvent)
+
 
 
 //router.post('/login',loginCheck)
