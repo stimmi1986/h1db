@@ -41,7 +41,7 @@ router.get('/', index) // virkar
 router.get('/event', listEvents); // virkar 
 router.post('/event', createEvent); // virkar
 router.get('/event/:slug', getEvent); // virkar
-router.patch('/event/:slug', updateEvent); // á að virka ????
+router.patch('/event/:slug', updateEvent); // virkar
 router.delete('/event/:slug', deleteEvent); // virkar en ekki sem er með id 1 
 
 router.get('/event/:slug/regis',getEventRegistrations)
