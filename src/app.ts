@@ -1,6 +1,8 @@
 import express, { NextFunction, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import { router } from './routes/api.js';
+import { cors } from './lib/cors.js'
+import { assertContentTypeForPostAndPatch } from './lib/assertContentTypeForPostAndPatch.js';
 import { createAdmin, isAdmin } from './lib/Users.js';
 
 dotenv.config();
@@ -20,6 +22,9 @@ const app = express();
 app.use(express.json());
 
 app.use(router);
+
+app.use(assertContentTypeForPostAndPatch);
+app.use(cors);
 
 const port = 3000;
 
