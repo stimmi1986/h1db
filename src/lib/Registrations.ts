@@ -53,6 +53,17 @@ export const patchRegistration = [
     validationCheck,
     patchRegistrationHandler,
   ];
+export const postRegistration = [
+    stringValidator({
+      field: 'comment',
+      valueRequired: false,
+      maxLength: 1000,
+      optional: true,
+    }),
+    xssSanitizer('comment'),
+    validationCheck,
+    postRegistrationHandler,
+  ];
 export async function patchRegistrationHandler(
     req: Request,
     res: Response,
@@ -125,7 +136,7 @@ export async function deleteRegistration(
     }
     res.json({message:"skráning eytt af viðburði"})
 }
-export async function postRegistration(
+export async function postRegistrationHandler(
     req:Request,
     res:Response,
     next:NextFunction){
