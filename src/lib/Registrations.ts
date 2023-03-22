@@ -3,6 +3,7 @@ import { NextFunction, Request,Response } from 'express';
 import { getEvents, getEventBySlug, getRegistrations, query, removeRegistration, conditionalUpdate } from '../lib/db.js'
 import { QueryResult } from "pg";
 import { atLeastOneBodyValueValidator, stringValidator, validationCheck, xssSanitizer } from "./validators-event.js";
+import { findById } from "./Users.js";
 
 /*
 export async function eventsIndex(
@@ -28,11 +29,11 @@ export async function getEventRegistrations(
 
     const id = await query('select id from events where slug = $1',[slug])
     if(!id||id.rowCount==0){
-      return null
+      return res.status(404).render('error',{'msg':'no such event'})
     }
     const result = await getRegistrations(id.rows[0].id)
     if(!result){
-        return next()
+        return res.status(500).render('error',{'msg':'resources not found'})
     }
 
 
@@ -56,11 +57,20 @@ export async function patchRegistrationHandler(
     req: Request,
     res: Response,
     next: NextFunction,){
+    if(!req.user||!req.user.id){
+        return res.status(401).render('error',{'msg':'not logged in'})
+    }
+    const userFind = await findById(req.user.id)
+    if(!userFind||!userFind.name){
+        return res.status(401).render('error',{'msg':'no user with your id'})
+    }
+    if(!(userFind.name==req.params.usernam)&&!req.user.admin){
+        return res.status(401).render('error',{'msg':'only administrator or this user can alter this registration'})
+    }
     const {slug,username} = req.params
     const id = await query('select id from events where slug = $1;',[slug])
     if(!id){
-        console.error("vandamál með að finna viðburð")
-      return next(new Error('Event not Found'))
+        return res.status(404).render('error',{'msg':'viðburður finnst ekki'})
     }
     const {name,comment} = req.body
     const fields = [
@@ -79,19 +89,29 @@ export async function patchRegistrationHandler(
             values
         );
         if (!updated){
-            return next(new Error('unable to update registration'));
+            return res.status(500).render('error')
         }
         const updatedRegi = RegisMapper(updated.rows[0]);
         return res.json(updatedRegi);
     }catch (err){
         console.error('Error updating registration:',err);
-        return next(new Error('unable to update registration'))
+        return res.status(500).render('error')
     }
 }
 export async function deleteRegistration(
     req:Request,
     res:Response,
     next: NextFunction){
+    if(!req.user||!req.user.id){
+        return res.status(401).render('error',{'msg':'not logged in'})
+    }
+    const userFind = await findById(req.user.id)
+    if(!userFind||!userFind.name){
+        return res.status(401).render('error',{'msg':'no user with your id'})
+    }
+    if(!(userFind.name==req.params.usernam)&&!req.user.admin){
+        return res.status(401).render('error',{'msg':'only administrator or this user can alter this registration'})
+    }
     const {slug,username} = req.params
     const id = await query('select id from events where slug = $1;',[slug])
     if(!id||id.rowCount==0){
@@ -104,20 +124,41 @@ export async function deleteRegistration(
         return next()
     }
     res.json({message:"skráning eytt af viðburði"})
-}/*
+}
 export async function postRegistration(
     req:Request,
     res:Response,
     next:NextFunction){
-    const {slug} = req.params
-    let {username, comment} = req.body
-    if(!username){
-        return next()
+    if(!req.user || !req.user.id){
+        return res.status(401).render('error', {'msg':'not logged in. cannot register'})
     }
+    const {slug} = req.params
+    const eventId = await query('select id from events where slug = $1;',[slug])
+    if(!eventId||eventId.rowCount==0){
+        return res.status(404).render('error',{'msg':'no such event'})
+    }
+    const {id} = req.user
+    const userFind = await findById(id)
+    if(!userFind || !userFind.username || !userFind.name){
+        return res.status(404).render('error',{'msg':'no user with your id'})
+    }
+    const registered = await query(`select 1 from registrations where event = $1 and username = $2 `,[eventId,userFind.username])
+    if(registered&&registered.rowCount>0){
+        return res.status(405).render('error',{'msg':'user already registered to event, can not create duplicate registrations'})
+    }
+    let {comment} = req.body
     if(!comment){
         comment = ''
     }
-}*/
+    const crea = await query(`insert into
+     registrations (event,username,name,comment) 
+     values ($1,$2,$3,$4)returning *`,[eventId,userFind.username,userFind.name,comment])
+    const newRegi = DbRegiToRegi(crea)
+    if(!newRegi){
+        return res.status(500).render('error',{'msg':'error in user registration insert command'})
+    }
+    return res.json(newRegi)
+}
 
 
 
