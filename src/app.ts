@@ -1,7 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import { router } from './routes/api.js';
-import { createAdmin, isAdmin } from './lib/Users.js';
 
 dotenv.config();
 

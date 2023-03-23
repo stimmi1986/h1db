@@ -10,6 +10,8 @@ import {
 import { getRegistrations } from '../lib/db.js';
 
 import { deleteRegistration, getEventRegistrations, patchRegistration } from '../lib/Registrations.js';
+import { createAdmin, createUser } from '../lib/Users.js';
+import { isAdmin } from '../lib/login.js';
 
 
 
@@ -33,6 +35,14 @@ export async function index(req: Request, res: Response) {
         href: '/event/:slug/events/:user',
         methods: ['GET', 'PATCH', 'DELETE'],
       },
+      {
+        href: '/login',
+        methods: ['GET'],
+      },
+      {
+        href: '/signup',
+        methods: ['POST'],
+      }
     ]);
 }
 
@@ -52,7 +62,10 @@ router.delete('/event/:slug/regis/:username',deleteRegistration)
 //router.get('/event/:events/:user', registerDetails)
 //router.patch('/event/:events/:user',updateRegistration)
 
-
+// router.get('/login', ensureLoggedIn)
+router.post('/signup',createUser)
+router.get('/login', isAdmin)
+router.post('/signup',createAdmin)
 
 //router.post('/login',loginCheck)
 //router.get('/logout',endSession)

@@ -1,8 +1,9 @@
 import passport from 'passport';
 import { Strategy } from 'passport-local';
-import { User } from '../routes/types';
-import { comparePasswords, findById, findByUsername } from './Users';
+import { User } from '../routes/types.js';
+import { comparePasswords, findById, findByUsername } from './Users.js';
 import { Request, Response, NextFunction } from 'express';
+import { query } from './db.js';
 
 /**
  * Athugar hvort username og password sé til í notandakerfi.
@@ -59,21 +60,27 @@ passport.deserializeUser(async (id:number, done) => {
 
 // Hjálpar middleware sem athugar hvort notandi sé innskráður og hleypir okkur
 // þá áfram, annars sendir á /login
-export function ensureLoggedIn(req: Request, res: Response, next: NextFunction) {
-  if (req.isAuthenticated()) {
-    return next();
+export async function isAdmin(username: string) {
+  const q = `
+    SELECT admin
+    FROM users
+    WHERE username = $1;
+  `;
+  try {
+    const result = await query(q, username);
+    if(result) return result.rows[0];
+  } catch (error) {
+    console.error('Finnur ekki notanda.');
   }
-
-  return res.redirect('/login');
+  return null;
 }
 
-export function ensureAdmin(req: Request, res: Response, next: NextFunction) {
-  if (req.isAuthenticated() && req.user?.admin) {
-    return next();
-  }
-
-  const title = 'Síða fannst ekki';
-  return res.status(404).render('error', { title });
-}
+// export function ensureLoggedIn(req: Request, res: Response, next: NextFunction) {
+//   if (req.isAuthenticated()) {
+//     return res.status(204).json({});
+//   }
+//   const title = 'Síða fannst ekki';
+//   return res.status(404).json({});
+// }
 
 export default passport; 

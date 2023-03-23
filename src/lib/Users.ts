@@ -1,4 +1,5 @@
 import bcrypt from 'bcrypt';
+import { NextFunction, Request, Response } from 'express';
 import { QueryResult } from 'pg';
 import { User } from '../routes/types.js';
 import { query } from './db.js';
@@ -40,8 +41,9 @@ export async function findById(id:number):Promise<User|null> {
   return null;
 }
 
-export async function createUser(name:string, username:string, password:string):Promise<User|null> {
+export async function createUser(req: Request, res: Response, next: NextFunction):Promise<User|null> {
   // Geymum hashað password!
+  const { name, username, password } = req.body;
   const hashedPassword = await bcrypt.hash(password, 11);
 
   const q = `
@@ -60,7 +62,8 @@ export async function createUser(name:string, username:string, password:string):
   return null;
 }
 
-export async function createAdmin(username:string, password: string){
+export async function createAdmin(req: Request, res: Response, next: NextFunction){
+  const { username, password } = req.body;
   const hashedPassword = await bcrypt.hash(password, 11);
 
   const q = `
@@ -78,19 +81,3 @@ export async function createAdmin(username:string, password: string){
 
   return null;
 }
-
-export async function isAdmin(username: string) {
-  const q = `
-    SELECT admin
-    FROM users
-    WHERE username = $1;
-  `;
-  try {
-    const result = await query(q, username);
-    if(result) return result.rows[0];
-  } catch (error) {
-    console.error('Finnur ekki notanda.');
-  }
-  return null;
-}
- 
