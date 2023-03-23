@@ -65,7 +65,7 @@ export function userMapper(input: unknown): User | null {
     !potentialUser.name ||
     !potentialUser.username ||
     !potentialUser.password ||
-    !potentialUser.admin 
+    potentialUser.admin==undefined 
   ) {
     return null;
   }
