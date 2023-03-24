@@ -116,7 +116,7 @@ export async function deleteRegistration(
     // if(!req.user||!req.user.id){
     //     return res.status(401).render('error',{'msg':'not logged in'})
     // }
-    const userFind = await findById((req.user as User).id)
+    const userFind = await findById(req.user.id)
     if(!userFind||!userFind.name){
         return res.status(401).json('no user with your id')
     }
