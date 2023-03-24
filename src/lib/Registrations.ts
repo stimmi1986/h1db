@@ -68,16 +68,16 @@ export async function patchRegistrationHandler(
     req: Request,
     res: Response,
     next: NextFunction,){
-    if(!req.user||!req.user.id){
-        return res.status(401).render('error',{'msg':'not logged in'})
-    }
-    const userFind = await findById(req.user.id)
-    if(!userFind||!userFind.name){
-        return res.status(401).render('error',{'msg':'no user with your id'})
-    }
-    if(!(userFind.name==req.params.usernam)&&!req.user.admin){
-        return res.status(401).render('error',{'msg':'only administrator or this user can alter this registration'})
-    }
+    // if(!req.user||!req.user.id){
+    //     return res.status(401).render('error',{'msg':'not logged in'})
+    // }
+    // const userFind = await findById(req.user.id)
+    // if(!userFind||!userFind.name){
+    //     return res.status(401).render('error',{'msg':'no user with your id'})
+    // }
+    // if(!(userFind.name==req.params.usernam)&&!req.user.admin){
+        // return res.status(401).render('error',{'msg':'only administrator or this user can alter this registration'})
+    // }
     const {slug,username} = req.params
     const id = await query('select id from events where slug = $1;',[slug])
     if(!id){
@@ -113,9 +113,9 @@ export async function deleteRegistration(
     req:Request,
     res:Response,
     next: NextFunction){
-    if(!req.user||!req.user.id){
-        return res.status(401).render('error',{'msg':'not logged in'})
-    }
+    // if(!req.user||!req.user.id){
+    //     return res.status(401).render('error',{'msg':'not logged in'})
+    // }
     const userFind = await findById(req.user.id)
     if(!userFind||!userFind.name){
         return res.status(401).render('error',{'msg':'no user with your id'})
@@ -140,9 +140,9 @@ export async function postRegistrationHandler(
     req:Request,
     res:Response,
     next:NextFunction){
-    if(!req.user || !req.user.id){
-        return res.status(401).render('error', {'msg':'not logged in. cannot register'})
-    }
+    // if(!req.user || !req.user.id){
+    //     return res.status(401).render('error', {'msg':'not logged in. cannot register'})
+    // }
     const {slug} = req.params
     const eventId = await query('select id from events where slug = $1;',[slug])
     if(!eventId||eventId.rowCount==0){

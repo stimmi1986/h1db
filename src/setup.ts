@@ -1,5 +1,8 @@
 import { readFile } from 'fs/promises';
 import { createSchema, dropSchema, end, query } from './lib/db.js';
+// import dotenv from 'dotenv';
+
+// dotenv.config();
 
 async function create() {
   const drop = await dropSchema();

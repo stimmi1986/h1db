@@ -26,7 +26,7 @@ export async function listEvents(
   next: NextFunction,
 ) {
   const event = await getEvents();
-
+  console.error(event[0])
   if (!event) {
     return next(new Error('unable to get event'));
   }
