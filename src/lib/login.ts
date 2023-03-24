@@ -5,6 +5,7 @@ import { comparePasswords, findById, findByUsername } from './Users.js';
 import { Request, Response, NextFunction } from 'express';
 import { query } from './db.js';
 import jwt from "jsonwebtoken";
+import cookieParser from 'cookie-parser';
 
 /**
  * Athugar hvort username og password sé til í notandakerfi.
@@ -53,6 +54,7 @@ function generateToken(user: User){
 // Notum local strategy með „strattinu“ okkar til að leita að notanda
 passport.use(new Strategy(strat));
 
+
 // getum stillt með því að senda options hlut með
 // passport.use(new Strategy({ usernameField: 'email' }, strat));
 
@@ -91,7 +93,8 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction){
   
   const user = req.user as User;
   const accessToken = generateToken(user);
-  res.cookie("name","guð")
+  res.clearCookie
+  res.cookie("signin",`${accessToken}`)
   
   res.status(200).json({
     userId: user.id,

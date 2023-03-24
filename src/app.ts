@@ -1,5 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express';
 import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
 import { router } from './routes/api.js';
 import { cors } from './lib/cors.js'
 import { assertContentTypeForPostAndPatch } from './lib/assertContentTypeForPostAndPatch.js';
@@ -21,10 +22,9 @@ const app = express();
 app.use(express.json());
 
 app.use(router);
-
 app.use(assertContentTypeForPostAndPatch);
 app.use(cors);
-
+app.use(cookieParser("1234"));
 const port = 3000;
 
 app.listen(port, () => {

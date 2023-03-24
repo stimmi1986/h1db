@@ -41,6 +41,7 @@
         "@typescript-eslint/eslint-plugin": "^5.54.0",
         "@typescript-eslint/parser": "^5.54.0",
         "bcrypt": "^5.1.0",
+        "cookie-parser": "^1.4.6",
         "eslint": "^8.35.0",
         "history": "^5.3.0",
         "nodemon": "^2.0.20",
