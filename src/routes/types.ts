@@ -4,7 +4,6 @@ export type Event = {
     name: string;
     slug: string;
     description?: string;
-    image: string,
     created?: Date;
     updated?: Date;
 };
@@ -24,7 +23,6 @@ export function eventMapper(input: unknown): Event | null {
     !potentialEvent.name ||
     !potentialEvent.slug ||
     !potentialEvent.description ||
-    !potentialEvent.image ||
     !potentialEvent.created ||
     !potentialEvent.updated 
   ) {
@@ -36,7 +34,6 @@ export function eventMapper(input: unknown): Event | null {
     name: potentialEvent.name,
     slug: potentialEvent.slug,
     description: potentialEvent.description,
-    image: potentialEvent.image,
     created: new Date(potentialEvent.created),
     updated: new Date(potentialEvent.updated),
     
