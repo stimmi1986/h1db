@@ -64,7 +64,7 @@ export async function createEventHandler(
     created: new Date,
     updated: new Date,
   };
-
+  
   const createdEvent = await insertEvent(eventToCreate);
   console.log(createdEvent)
   if (!createdEvent) {
