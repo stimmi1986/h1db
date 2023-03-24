@@ -21,10 +21,11 @@ const app = express();
 
 app.use(express.json());
 
+app.use(cookieParser());
 app.use(router);
 app.use(assertContentTypeForPostAndPatch);
 app.use(cors);
-app.use(cookieParser("1234"));
+
 const port = 3000;
 
 app.listen(port, () => {

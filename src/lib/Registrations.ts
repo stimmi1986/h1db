@@ -5,6 +5,7 @@ import { QueryResult } from "pg";
 import { atLeastOneBodyValueValidator, stringValidator, validationCheck, xssSanitizer } from "./validators-event.js";
 import { findById } from "./Users.js";
 import { User } from "../routes/types.js";
+import jwt from "jsonwebtoken";
 /*
 export async function eventsIndex(
     req: Request,
@@ -68,20 +69,23 @@ export async function patchRegistrationHandler(
     req: Request,
     res: Response,
     next: NextFunction,){
-    // if(!req.user||!req.user.id){
-    //     return res.status(401).render('error',{'msg':'not logged in'})
-    // }
-    // const userFind = await findById(req.user.id)
-    // if(!userFind||!userFind.name){
-    //     return res.status(401).render('error',{'msg':'no user with your id'})
-    // }
-    // if(!(userFind.name==req.params.usernam)&&!req.user.admin){
-        // return res.status(401).render('error',{'msg':'only administrator or this user can alter this registration'})
-    // }
-    const {slug,username} = req.params
+    if(!req.cookies?.signin){
+          return res.status(401).json('ekki skráður inn');
+    }
+    const userInfo=jwt.decode(req.cookies.signin)
+
+    const {slug,username} = req.params;
+    if(!userInfo ||!(userInfo['admin']||userInfo['username']==username)){
+        return res.status(401).json('hefur ekki heimild til að breyta skráningu þessa notenda')
+    }
     const id = await query('select id from events where slug = $1;',[slug])
-    if(!id){
+    if(!id||id.rowCount==0){
         return res.status(404).json('viðburður finnst ekki')
+    }
+    const regId = await query('select id from registrations where username=$1 and event =$2;',[username,id.rows[0].id])
+    
+    if(!regId||regId.rowCount==0){
+        return res.status(404).json('skráning finnst ekki')
     }
     const {name,comment} = req.body
     const fields = [
@@ -95,7 +99,7 @@ export async function patchRegistrationHandler(
     try{
         const updated = await conditionalUpdate(
             'registrations',
-            id.rows[0].id,
+            regId.rows[0].id,
             fields,
             values
         );
