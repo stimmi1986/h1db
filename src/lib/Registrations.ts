@@ -148,7 +148,7 @@ export async function postRegistrationHandler(
     if(!eventId||eventId.rowCount==0){
         return res.status(404).json('no such event')
     }
-    const {id} = req.user
+    const {id} = req.user as User
     const userFind = await findById(id)
     if(!userFind || !userFind.username || !userFind.name){
         return res.status(404).json('no user with your id')
