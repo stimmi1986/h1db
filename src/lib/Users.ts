@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
-import { QueryResult } from 'pg';
-import { User } from '../routes/types.js';
+import { NextFunction, Request, Response } from 'express';
+import { User, userMapper } from '../routes/types.js';
 import { query } from './db.js';
 
 export async function comparePasswords(password:string, hash:string):Promise<boolean>  {
@@ -40,8 +40,9 @@ export async function findById(id:number):Promise<User|null> {
   return null;
 }
 
-export async function createUser(name:string, username:string, password:string):Promise<User|null> {
+export async function createUser(req: Request, res: Response, next: NextFunction) {
   // Geymum hashað password!
+  const { name, username, password } = req.body;
   const hashedPassword = await bcrypt.hash(password, 11);
 
   const q = `
@@ -52,45 +53,14 @@ export async function createUser(name:string, username:string, password:string):
   `;
 
   const result = await query(q, [name, username, hashedPassword]);
-
-  if (result?.rowCount === 1) {
-    return result.rows[0];
+  
+  if(!result) return res.status(500);
+  const mapped = userMapper(result.rows[0])
+  console.error(mapped);
+  
+  if (mapped) {
+    return res.status(201).json(mapped);
   }
 
-  return null;
+  return res.status(401);
 }
-
-export async function createAdmin(username:string, password: string){
-  const hashedPassword = await bcrypt.hash(password, 11);
-
-  const q = `
-  INSERT INTO
-  users (username, password, admin)
-    VALUES ($1, $2, true)
-  RETURNING *;
-  `;
-  try {
-    const result = await query(q, [username, hashedPassword]);
-    if(result) return result.rows[0];
-  } catch (e) {
-    console.error('Gat ekki búið til kerfisstjóra');
-  }
-
-  return null;
-}
-
-export async function isAdmin(username: string) {
-  const q = `
-    SELECT admin
-    FROM users
-    WHERE username = $1;
-  `;
-  try {
-    const result = await query(q, username);
-    if(result) return result.rows[0];
-  } catch (error) {
-    console.error('Finnur ekki notanda.');
-  }
-  return null;
-}
- 

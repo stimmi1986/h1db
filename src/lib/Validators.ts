@@ -1,4 +1,5 @@
-import { body } from 'express-validator';
+import { NextFunction, Request, Response } from 'express';
+import { body, validationResult } from 'express-validator';
 import xss from 'xss';
 
 export function registrationValidationMiddleware(textField: string) {
@@ -45,4 +46,18 @@ export function sanitizationMiddleware(textField:string) {
     body('location').trim().escape(),
     body('url').trim().escape(),
   ];
+}
+
+export async function validateUser(req: Request, res: Response, next: NextFunction) {
+  const { name, username } = req.body;
+  const validation = validationResult(req);
+
+  if(!validation.isEmpty()){
+    const data = {
+      name,
+      username,
+    };
+    if(!data) return res.status(400).json(validation);
+  }
+  return next();
 }

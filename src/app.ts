@@ -3,7 +3,6 @@ import dotenv from 'dotenv';
 import { router } from './routes/api.js';
 import { cors } from './lib/cors.js'
 import { assertContentTypeForPostAndPatch } from './lib/assertContentTypeForPostAndPatch.js';
-import { createAdmin, isAdmin } from './lib/Users.js';
 
 dotenv.config();
 
