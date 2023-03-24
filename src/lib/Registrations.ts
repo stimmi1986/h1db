@@ -116,11 +116,11 @@ export async function deleteRegistration(
     // if(!req.user||!req.user.id){
     //     return res.status(401).render('error',{'msg':'not logged in'})
     // }
-    const userFind = await findById(req.user.id)
+    const userFind = await findById((req.user as User).id)
     if(!userFind||!userFind.name){
         return res.status(401).json('no user with your id')
     }
-    if(!(userFind.name==req.params.usernam)&&!req.user.admin){
+    if(!(userFind.name==req.params.usernam)&&!(req.user as User).admin){
         return res.status(401).json('only administrator or this user can alter this registration')
     }
     const {slug,username} = req.params
@@ -148,7 +148,7 @@ export async function postRegistrationHandler(
     if(!eventId||eventId.rowCount==0){
         return res.status(404).json('no such event')
     }
-    const id =1;
+    const {id} = req.user
     const userFind = await findById(id)
     if(!userFind || !userFind.username || !userFind.name){
         return res.status(404).json('no user with your id')
