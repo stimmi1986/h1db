@@ -1,4 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
+import { uploadImage } from '../imgs/img.js';
+import { logger } from './logger.js'
 import slugify from 'slugify';
 import {
   conditionalUpdate,
@@ -59,14 +61,15 @@ export async function createEventHandler(
     name,
     slug: slugify(name, '-'),
     description,
+    image: '',
     created: new Date,
     updated: new Date,
   };
 
   const createdEvent = await insertEvent(eventToCreate);
-console.log(createdEvent)
+  console.log(createdEvent)
   if (!createdEvent) {
-    return next(new Error('unable to create department'));
+    return next(new Error('unable to create Event'));
   }
 
   return res.status(201).json(createdEvent);
@@ -114,8 +117,22 @@ export async function updateEventHandler(
     return next();
   }
 
-  const { name, description } = req.body;
+  let image;
+  try {
+    const imagePath: any = "";
 
+    const uploadResult = await uploadImage(imagePath);
+    if (!uploadResult || !uploadResult.secure_url) {
+      throw new Error('no secure_url from cloudinary upload');
+    }
+    image = uploadResult.secure_url;
+  } catch (e) {
+    logger.error('Unable to upload file to cloudinary', e);
+    return res.status(500).end();
+  }
+  const imagePath: any = "";
+
+  const { name, description } = req.body;
   const fields = [
     typeof name === 'string' && name ? 'name' : null,
     typeof name === 'string' && name ? 'slug' : null,
@@ -126,7 +143,23 @@ export async function updateEventHandler(
     typeof name === 'string' && name ? slugify(name, '-').toLowerCase() : null,
     typeof description === 'string' && description ? description : null,
   ];
+  if (imagePath) {
+    let image;
+    try {
+      const uploadResult = await uploadImage(imagePath);
+      if (!uploadResult || !uploadResult.secure_url) {
+        throw new Error('no secure_url from cloudinary upload');
+      }
+      image = uploadResult.secure_url;
+    } catch (e) {
+      logger.error('Unable to upload file to cloudinary', e);
+      return res.status(500).end();
+    }
 
+    fields.push('image');
+    values.push(image);
+  }
+ 
   try {
     const updated = await conditionalUpdate(
       'events',

@@ -112,33 +112,19 @@ export async function deleteEventBySlug(slug: string): Promise<boolean> {
 }
 
 export async function insertEvent(
-  event: Omit<Event, 'id'>,
+  event: Omit<Event,'id'>
 ): Promise<Event | null> {
-  const { name, slug, description } = event;
+  const { name, slug, description, image } = event;
   const result = await query(
-    'INSERT INTO events (name, slug, description) VALUES ($1, $2, $3) RETURNING id, name, slug, description, created, updated',
-    [name, slug, description],
+    'INSERT INTO events (name, slug, description, image) VALUES ($1, $2, $3, $4) RETURNING id, name, slug, description, image, created, updated',
+    [name, slug, description, image ],
   );
 
   const mapped = eventMapper(result?.rows[0]);
 
   return mapped;
 }
-/*
-export async function insertEvent(input:Event):Promise<Event|null>{
-    if(!input){
-        return null;
-    }
-    const q = `
-    INSERT INTO events
-        (name,slug)
-    VALUES
-        ($1,$2)
-    RETURNING id`;
 
-  }
-}
-*/
 export async function conditionalUpdate(
   table: string,
   id: number,
