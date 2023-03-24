@@ -116,13 +116,13 @@ export async function deleteRegistration(
     // if(!req.user||!req.user.id){
     //     return res.status(401).render('error',{'msg':'not logged in'})
     // }
-    const userFind = await findById(req.user.id)
-    if(!userFind||!userFind.name){
-        return res.status(401).render('error',{'msg':'no user with your id'})
-    }
-    if(!(userFind.name==req.params.usernam)&&!req.user.admin){
-        return res.status(401).render('error',{'msg':'only administrator or this user can alter this registration'})
-    }
+    // const userFind = await findById(req.user.id)
+    // if(!userFind||!userFind.name){
+    //     return res.status(401).render('error',{'msg':'no user with your id'})
+    // }
+    // if(!(userFind.name==req.params.usernam)&&!req.user.admin){
+    //     return res.status(401).render('error',{'msg':'only administrator or this user can alter this registration'})
+    // }
     const {slug,username} = req.params
     const id = await query('select id from events where slug = $1;',[slug])
     if(!id||id.rowCount==0){
@@ -150,9 +150,9 @@ export async function postRegistrationHandler(
     }
     const {id} = req.user
     const userFind = await findById(id)
-    if(!userFind || !userFind.username || !userFind.name){
-        return res.status(404).render('error',{'msg':'no user with your id'})
-    }
+    // if(!userFind || !userFind.username || !userFind.name){
+    //     return res.status(404).render('error',{'msg':'no user with your id'})
+    // }
     const registered = await query(`select 1 from registrations where event = $1 and username = $2 `,[eventId,userFind.username])
     if(registered&&registered.rowCount>0){
         return res.status(405).render('error',{'msg':'user already registered to event, can not create duplicate registrations'})
