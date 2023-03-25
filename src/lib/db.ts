@@ -115,12 +115,10 @@ export async function insertEvent(
   event: Omit<Event,'id'>
 ): Promise<Event | null> {
   const { name, slug, description } = event;
-
   const result = await query(
     'INSERT INTO events (name, slug, description) VALUES ($1, $2, $3) RETURNING id, name, slug, description, created, updated',
-    [name, slug, description],
+    [name, slug, description]
   );
-  console.error(result)
   const mapped = eventMapper(result?.rows[0]);
 
   return mapped;

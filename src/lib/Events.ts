@@ -9,6 +9,7 @@ import {
   getEvents,
   insertEvent,
 } from '../lib/db.js';
+import jwt from "jsonwebtoken";
 
 import {
   atLeastOneBodyValueValidator,
@@ -55,6 +56,16 @@ export async function createEventHandler(
   res: Response,
   next: NextFunction,
 ) {
+  if(!req.cookies?.signin){
+    return res.status(401).json("ekki skráður inn")
+  }
+  const userInfo=jwt.decode(req.cookies.signin)
+  if(!userInfo||!userInfo['username']){
+      return res.status(401).json('ekki skráður inn');
+  }
+  if(!userInfo['admin']){
+    return res.status(401).json('hefur ekki heimild til að eiga við viðburði')
+  }
   const { name, description } = req.body;
 
   const eventToCreate: Omit<Event, 'id'> = {
@@ -64,11 +75,9 @@ export async function createEventHandler(
     created: new Date,
     updated: new Date,
   };
-  
   const createdEvent = await insertEvent(eventToCreate);
-  console.log(createdEvent)
   if (!createdEvent) {
-    return next(new Error('unable to create Event'));
+    return res.status(500).json('vandamál við að skapa viðburð');
   }
 
   return res.status(201).json(createdEvent);
@@ -110,10 +119,20 @@ export async function updateEventHandler(
   res: Response,
   next: NextFunction,
 ) {
+  if(!req.cookies?.signin){
+    return res.status(401).json("ekki skráður inn")
+  }
+  const userInfo=jwt.decode(req.cookies.signin)
+  if(!userInfo||!userInfo['username']){
+      return res.status(401).json('ekki skráður inn');
+  }
+  if(!userInfo['admin']){
+    return res.status(401).json('hefur ekki heimild til að eiga við viðburði')
+  }
   const { slug } = req.params;
   const event = await getEventBySlug(slug);
   if (!event) {
-    return next();
+    return res.status(404).json('viðburður finnst ekki');
   }
 
   const { name, description } = req.body;
@@ -135,6 +154,7 @@ export async function updateEventHandler(
       fields,
       values,
     );
+    console.error(updated);
     if (!updated) {
       return next(new Error('unable to update event'));
     }
@@ -142,7 +162,7 @@ export async function updateEventHandler(
     return res.json(updatedEvent);
   } catch (err) {
     console.error('Error updating event:', err);
-    return next(new Error('unable to update event'));
+    return res.status(500).json('vandamál við að uppfæra viðburð');
   }
 }
 
@@ -151,18 +171,27 @@ export async function deleteEvent(
   res: Response,
   next: NextFunction,
 ) {
+  if(!req.cookies?.signin){
+    return res.status(401).json("ekki skráður inn")
+  }
+  const userInfo=jwt.decode(req.cookies.signin)
+  if(!userInfo||!userInfo['username']){
+      return res.status(401).json('ekki skráður inn');
+  }
+  if(!userInfo['admin']){
+    return res.status(401).json('hefur ekki heimild til að eiga við viðburði')
+  }
   const { slug } = req.params;
   const event = await getEventBySlug(slug);
-console.log(slug) 
   if (!event) {
-    return next();
+    return res.status(404).json('viðburður ekki á skrá');
   }
 
   const result = await deleteEventBySlug(slug);
 console.log(slug)
   if (!result) {
-    return next(new Error('unable to delete event'));
+    return res.status(500).json('vandamál við eyðingu viðburðar');
   }
 
-  return res.status(204).json({});
+  return res.status(204).json('viðburði eytt');
 }

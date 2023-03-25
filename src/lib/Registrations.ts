@@ -1,10 +1,8 @@
-import { Regi,RegisMapper,importRegi } from "../routes/types.js";
+import { Regi,RegisMapper } from "../routes/types.js";
 import { NextFunction, Request,Response } from 'express';
-import { getEvents, getEventBySlug, getRegistrations, query, removeRegistration, conditionalUpdate } from '../lib/db.js'
+import { getRegistrations, query, removeRegistration, conditionalUpdate } from '../lib/db.js'
 import { QueryResult } from "pg";
 import { atLeastOneBodyValueValidator, stringValidator, validationCheck, xssSanitizer } from "./validators-event.js";
-import { findById } from "./Users.js";
-import { User } from "../routes/types.js";
 import jwt from "jsonwebtoken";
 /*
 export async function eventsIndex(
