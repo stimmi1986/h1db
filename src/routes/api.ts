@@ -36,6 +36,7 @@ export async function index(req: Request, res: Response) {
       {
         href: '/event/:slug/events/:user',
         methods: ['GET', 'PATCH', 'DELETE'],
+        response:['200 OK','400 Bad Request','401 Unauthorized','404 not found','500 server side error']
       },
       {
         href: '/login',

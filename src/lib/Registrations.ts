@@ -138,7 +138,7 @@ export async function deleteRegistration(
         console.error("vandamál með að uppfæra skráningu")
         return res.status(500).json('vandamál með að uppfæra skráningu')
     }
-    res.json({message:"skráning eytt af viðburði"})
+    res.status(200).json({message:"skráning eytt af viðburði"})
 }
 export async function postRegistrationHandler(
     req:Request,
@@ -186,7 +186,7 @@ export async function postRegistrationHandler(
         return res.status(500).json('error in user registration insert command')
     }
     const newRegi = RegisMapper(crea.rows[0])
-    return res.json(newRegi)
+    return res.status(201).json(newRegi)
 }
 
 
