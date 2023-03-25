@@ -3,6 +3,7 @@ import pg ,{ QueryResult }  from 'pg';
 import { Event, eventMapper, Regi, RegisMapper } from '../routes/types.js'
 import { readFile } from 'fs/promises';
 import { DbRegisToRegis, DbRegiToRegi } from './Registrations.js';
+import { findById } from './Users.js';
 
 const SCHEMA_FILE = './sql/schema.sql';
 const DROP_SCHEMA_FILE = './sql/drop.sql';
@@ -102,6 +103,11 @@ export async function removeRegistration(event:number,username:string):Promise<b
 }
 
 export async function deleteEventBySlug(slug: string): Promise<boolean> {
+  const id = await query('select id from events where slug = $1;',[slug]);
+  if(!id||id.rowCount==0){
+    return false
+  }
+  await query('delete from registration where event= $1',[id.rows[0].id]);
   const result = await query('DELETE FROM events WHERE slug = $1;', [slug]);
 
   if (!result) {

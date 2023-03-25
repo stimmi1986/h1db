@@ -154,7 +154,6 @@ export async function updateEventHandler(
       fields,
       values,
     );
-    console.error(updated);
     if (!updated) {
       return next(new Error('unable to update event'));
     }
@@ -193,5 +192,5 @@ console.log(slug)
     return res.status(500).json('vandamál við eyðingu viðburðar');
   }
 
-  return res.status(204).json('viðburði eytt');
+  return res.status(200).json('viðburði eytt');
 }
