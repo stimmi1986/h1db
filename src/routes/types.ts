@@ -102,7 +102,6 @@ if (
   !potentialRegi ||
   !potentialRegi.id ||
   !potentialRegi.name ||
-  !potentialRegi.comment ||
   !potentialRegi.username ||
   !potentialRegi.event ||
   !potentialRegi.created ||
@@ -114,7 +113,7 @@ if (
 const regi: Regi = {
   id: potentialRegi.id,
   name: potentialRegi.name,
-  comment: potentialRegi.comment,
+  comment: potentialRegi.comment? potentialRegi.comment: null,
   username: potentialRegi.username,
   event: potentialRegi.event,
   created: new Date(potentialRegi.created),

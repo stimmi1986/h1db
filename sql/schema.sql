@@ -25,5 +25,6 @@ CREATE TABLE public.registrations (
   created TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT event FOREIGN KEY (event) REFERENCES events (id),
-  CONSTRAINT username FOREIGN KEY (username) REFERENCES users (username)
+  CONSTRAINT username FOREIGN KEY (username) REFERENCES users (username),
+  constraint uq_pair  UNIQUE(username,event)
 );

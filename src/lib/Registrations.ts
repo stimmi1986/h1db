@@ -55,12 +55,16 @@ export const patchRegistration = [
     patchRegistrationHandler,
   ];
 export const postRegistration = [
+    stringValidator({field: 'username',maxLength:64,optional:true}),
+    stringValidator({ field: 'name', maxLength: 64, optional: true }),
     stringValidator({
       field: 'comment',
       valueRequired: false,
       maxLength: 1000,
       optional: true,
     }),
+    xssSanitizer('username'),
+    xssSanitizer('name'),
     xssSanitizer('comment'),
     validationCheck,
     postRegistrationHandler,
@@ -117,26 +121,22 @@ export async function deleteRegistration(
     req:Request,
     res:Response,
     next: NextFunction){
-    // if(!req.user||!req.user.id){
-    //     return res.status(401).render('error',{'msg':'not logged in'})
-    // }
-    const userFind = await findById((req.user as User).id)
-    if(!userFind||!userFind.name){
-        return res.status(401).json('no user with your id')
-    }
-    if(!(userFind.name==req.params.usernam)&&!(req.user as User).admin){
+    if(!req.cookies?.signin){
+            return res.status(401).json('ekki skráður inn');
+      }
+    const userInfo=jwt.decode(req.cookies.signin)
+    const {slug,username} = req.params
+    if(!userInfo||!(userInfo['username']==username||userInfo['admin'])){
         return res.status(401).json('only administrator or this user can alter this registration')
     }
-    const {slug,username} = req.params
     const id = await query('select id from events where slug = $1;',[slug])
     if(!id||id.rowCount==0){
-        console.error("vandamál með að finna viðburð")
-        return next()
+        return res.status(404).json('viðburður finnst ekki')
     }
     const result = await removeRegistration(id.rows[0].id,username)
     if(!result){
         console.error("vandamál með að uppfæra skráningu")
-        return next()
+        return res.status(500).json('vandamál með að uppfæra skráningu')
     }
     res.json({message:"skráning eytt af viðburði"})
 }
@@ -144,34 +144,48 @@ export async function postRegistrationHandler(
     req:Request,
     res:Response,
     next:NextFunction){
-    // if(!req.user || !req.user.id){
-    //     return res.status(401).render('error', {'msg':'not logged in. cannot register'})
-    // }
-    const {slug} = req.params
+    if(!req.cookies?.signin){
+        return res.status(401).json('ekki skráður inn');
+    }
+    const userInfo=jwt.decode(req.cookies.signin)
+    if(!userInfo||!userInfo['username']){
+        return res.status(401).json('ekki skráður inn');
+    }
+    let {username} = req.params;
+    if(!username){
+        username = userInfo['username'];
+    }
+    if(!(userInfo['username']==username||userInfo['admin'])){
+        return res.status(401).json('hefur ekki heimild til að breyta skráningu þessa notenda')
+    }
+    const {slug} = req.params;
     const eventId = await query('select id from events where slug = $1;',[slug])
     if(!eventId||eventId.rowCount==0){
         return res.status(404).json('no such event')
     }
-    const {id} = req.user as User
-    const userFind = await findById(id)
-    if(!userFind || !userFind.username || !userFind.name){
-        return res.status(404).json('no user with your id')
-    }
-    const registered = await query(`select 1 from registrations where event = $1 and username = $2 `,[eventId,userFind.username])
-    if(registered&&registered.rowCount>0){
+    const registered = await query(`select * from registrations where event = $1 and username = $2 `,[eventId.rows[0].id,username])
+    if(registered && registered.rowCount>0){
         return res.status(405).json('user already registered to event, can not create duplicate registrations')
     }
-    let {comment} = req.body
-    if(!comment){
-        comment = ''
+    let {comment,name} = req.body
+    if(!name){
+        const search = await query('select name from users where username=$1;',[username]);
+        if(!search || search.rowCount==0){
+            return res.status(404).json('no name found for signed in user');
+        }
+        name = search.rows[0].name;
     }
+    const poscomm = comment? ',comment':'';
+    const poscommnum = comment? ',$4':'';
+    const vals = [eventId.rows[0].id,username,name]
+    comment? vals.push(comment): null;
     const crea = await query(`insert into
-     registrations (event,username,name,comment) 
-     values ($1,$2,$3,$4)returning *`,[eventId,userFind.username,userFind.name,comment])
-    const newRegi = DbRegiToRegi(crea)
-    if(!newRegi){
+     registrations (event,username,name${poscomm}) 
+     values ($1,$2,$3${poscommnum})returning *;`,vals);
+    if(!crea || crea.rowCount==0){
         return res.status(500).json('error in user registration insert command')
     }
+    const newRegi = RegisMapper(crea.rows[0])
     return res.json(newRegi)
 }
 

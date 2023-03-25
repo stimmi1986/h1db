@@ -5,7 +5,7 @@ import { comparePasswords, findById, findByUsername } from './Users.js';
 import { Request, Response, NextFunction } from 'express';
 import { query } from './db.js';
 import jwt from "jsonwebtoken";
-import cookieParser from 'cookie-parser';
+
 
 /**
  * Athugar hvort username og password sé til í notandakerfi.

@@ -84,7 +84,7 @@ export async function getEventBySlug(
   return event;
 }
 export async function getRegistrations(event:number):Promise<Array<Regi>|null>{
-  const result = await query('select * from registrations where event=$1',[event]);
+  const result = await query('select * from registrations where event=$1;',[event]);
   if(!result){
     return null
   }
@@ -93,8 +93,8 @@ export async function getRegistrations(event:number):Promise<Array<Regi>|null>{
 }
 
 export async function removeRegistration(event:number,username:string):Promise<boolean>{
-  const result = await query(`delete registrations
-  where event =$1 and username like $2 returning 1`,[event,username])
+  const result = await query(`delete from registrations
+  where event =$1 and username = $2 returning 1;`,[event,username]);
   if(!result||result.rowCount===0){
     return false
   }return true
@@ -102,7 +102,7 @@ export async function removeRegistration(event:number,username:string):Promise<b
 }
 
 export async function deleteEventBySlug(slug: string): Promise<boolean> {
-  const result = await query('DELETE FROM events WHERE slug = $1', [slug]);
+  const result = await query('DELETE FROM events WHERE slug = $1;', [slug]);
 
   if (!result) {
     return false;

@@ -9,10 +9,11 @@ import {
 
 import { getRegistrations } from '../lib/db.js';
 
-import { deleteRegistration, getEventRegistrations, patchRegistration } from '../lib/Registrations.js';
+import {postRegistration, deleteRegistration, getEventRegistrations, patchRegistration } from '../lib/Registrations.js';
 import { createUser, findByUsername } from '../lib/Users.js';
 import passport, { authMiddleware, isUser } from '../lib/login.js';
 import { validateUser } from '../lib/Validators.js';
+import { cookie } from 'express-validator';
 
 
 
@@ -59,8 +60,7 @@ router.delete('/event/:slug', deleteEvent); // virkar en ekki sem er með id 1
 router.get('/event/:slug/regis',getEventRegistrations)
 router.patch('/event/:slug/regis/:username',patchRegistration)
 router.delete('/event/:slug/regis/:username',deleteRegistration)
-
-//router.post('/event/:slug',addRegistration)
+router.post('/event/:slug',postRegistration)
 //router.get('/event/:events/:user', registerDetails)
 //router.patch('/event/:events/:user',updateRegistration)
 
