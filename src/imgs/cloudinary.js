@@ -7,7 +7,7 @@ import {Resize} from '@cloudinary/url-gen/actions'
 
 
 
-const cldInstance = new Cloudinary({cloud: {cloudName: 'djyeixsel'}});
+export const cldInstance = new Cloudinary({cloud: {cloudName: 'djyeixsel'}});
 
 
 
@@ -19,7 +19,6 @@ const fetchedImage = cldInstance
 
 console.log(fetchedImage.toURL());
 // https://res.cloudinary.com/<cloud_name>/image/fetch/https://upload.wikimedia.org/wikipedia/commons/a/ae/Olympic_flag.jpg
-
 
 
 
