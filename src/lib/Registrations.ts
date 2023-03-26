@@ -149,7 +149,7 @@ export async function postRegistrationHandler(
     if(!userInfo||!userInfo['username']){
         return res.status(401).json('ekki skráður inn');
     }
-    let {username} = req.params;
+    let {username} = req.body;
     if(!username){
         username = userInfo['username'];
     }

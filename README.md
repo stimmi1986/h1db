@@ -11,3 +11,9 @@
     "username" : "admin",
     "password" : "123"
 }
+## SignUp /signup
+{
+    "name":"eitthvað",
+    "username":"eitthvad",
+    "password":"eitthvad"
+}

@@ -19,7 +19,7 @@ import { cookie } from 'express-validator';
 
 export const router = express.Router();
 
-export async function index(req: Request, res: Response) {
+export async function index(req:Request, res: Response) {
     return res.json([
       {
         href: '/event',
