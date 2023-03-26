@@ -1,12 +1,13 @@
 import util from 'util';
-
+import {readFile}from 'fs';
 import { v2 as cloudinary } from 'cloudinary';
 import dotenv from 'dotenv';
-import { cldInstance } from './cloudinary.js';
 
 dotenv.config();
-cloudinary.config({cloud_name: process.env.cloud_name});
+cloudinary.config();
 console.log(cloudinary.config().cloud_name);
+
+
 
 const resourcesAsync = util.promisify(cloudinary.api.resources);
 const uploadAsync = util.promisify(cloudinary.uploader.upload);
@@ -50,14 +51,27 @@ export async function listImages() {
 
   return resources;
 }
+export const uploadImage = async (imagePath,name) => {
 
-export async function uploadImage(filepath,name) {
-  return uploadAsync.upload(filepath,
-    {resource_type:"image",name:name})
-    .then((result) => {
-    
-    console.log("success",JSON.stringify(result,null,2))})
-    .catch((error) =>{
-      console.log("error",JSON.stringify(error,null,2))
-    });
-}
+  // Use the uploaded file's name as the asset's public ID and 
+  // allow overwriting the asset with new versions
+  const options = {
+    use_filename: true,
+    unique_filename: false,
+    overwrite: true,
+  };
+
+  try {
+    // Upload the image
+    const result = await cloudinary.uploader.upload(imagePath, options);
+    console.log(result);
+    return result.public_id;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+
+uploadImage('./pics/oat-milk.jpg',"oat");
+const result = cloudinary
+  .image('oat-milk.jpg');
