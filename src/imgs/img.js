@@ -70,8 +70,3 @@ export const uploadImage = async (imagePath,name) => {
     console.error(error);
   }
 };
-
-
-uploadImage('./pics/oat-milk.jpg',"oat");
-const result = cloudinary
-  .image('oat-milk.jpg');
