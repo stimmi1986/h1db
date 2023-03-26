@@ -56,10 +56,10 @@ export async function createEventHandler(
   res: Response,
   next: NextFunction,
 ) {
-  if(!req.signedCookies?.signin){
+  if(!req.cookies?.signin){
     return res.status(401).json("ekki skráður inn")
   }
-  const userInfo=jwt.decode(req.signedCookies.signin)
+  const userInfo=jwt.decode(req.cookies.signin)
   if(!userInfo||!userInfo['username']){
       return res.status(401).json('ekki skráður inn');
   }
@@ -119,10 +119,10 @@ export async function updateEventHandler(
   res: Response,
   next: NextFunction,
 ) {
-  if(!req.signedCookies?.signin){
+  if(!req.cookies?.signin){
     return res.status(401).json("ekki skráður inn")
   }
-  const userInfo=jwt.decode(req.signedCookies.signin)
+  const userInfo=jwt.decode(req.cookies.signin)
   if(!userInfo||!userInfo['username']){
       return res.status(401).json('ekki skráður inn');
   }
@@ -170,10 +170,10 @@ export async function deleteEvent(
   res: Response,
   next: NextFunction,
 ) {
-  if(!req.signedCookies?.signin){
+  if(!req.cookies?.signin){
     return res.status(401).json("ekki skráður inn")
   }
-  const userInfo=jwt.decode(req.signedCookies.signin)
+  const userInfo=jwt.decode(req.cookies.signin)
   if(!userInfo||!userInfo['username']){
       return res.status(401).json('ekki skráður inn');
   }
