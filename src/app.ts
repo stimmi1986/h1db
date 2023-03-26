@@ -21,7 +21,7 @@ const app = express();
 
 app.use(express.json());
 
-app.use(cookieParser());
+app.use(cookieParser(process.env.SESSION_SECRET));
 app.use(router);
 app.use(assertContentTypeForPostAndPatch);
 app.use(cors);

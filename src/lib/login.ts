@@ -94,7 +94,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction){
   const user = req.user as User;
   const accessToken = generateToken(user);
   res.clearCookie
-  res.cookie("signin",`${accessToken}`)
+  res.cookie("signin",`${accessToken}`,{signed:true})
   res.status(200).json({
     userId: user.id,
     username: user.username,

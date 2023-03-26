@@ -71,10 +71,10 @@ export async function patchRegistrationHandler(
     req: Request,
     res: Response,
     next: NextFunction,){
-    if(!req.cookies?.signin){
+    if(!req.signedCookies?.signin){
           return res.status(401).json('ekki skráður inn');
     }
-    const userInfo=jwt.decode(req.cookies.signin)
+    const userInfo=jwt.decode(req.signedCookies.signin)
 
     const {slug,username} = req.params;
     if(!userInfo ||!(userInfo['admin']||userInfo['username']==username)){
@@ -119,10 +119,10 @@ export async function deleteRegistration(
     req:Request,
     res:Response,
     next: NextFunction){
-    if(!req.cookies?.signin){
+    if(!req.signedCookies?.signin){
             return res.status(401).json('ekki skráður inn');
       }
-    const userInfo=jwt.decode(req.cookies.signin)
+    const userInfo=jwt.decode(req.signedCookies.signin)
     const {slug,username} = req.params
     if(!userInfo||!(userInfo['username']==username||userInfo['admin'])){
         return res.status(401).json('only administrator or this user can alter this registration')
@@ -142,10 +142,10 @@ export async function postRegistrationHandler(
     req:Request,
     res:Response,
     next:NextFunction){
-    if(!req.cookies?.signin){
+    if(!req.signedCookies?.signin){
         return res.status(401).json('ekki skráður inn');
     }
-    const userInfo=jwt.decode(req.cookies.signin)
+    const userInfo=jwt.decode(req.signedCookies.signin)
     if(!userInfo||!userInfo['username']){
         return res.status(401).json('ekki skráður inn');
     }
