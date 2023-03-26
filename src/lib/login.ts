@@ -93,8 +93,8 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction){
   
   const user = req.user as User;
   const accessToken = generateToken(user);
-  res.clearCookie
-  res.cookie("signin",`${accessToken}`)
+  res.clearCookie('signin');
+  res.cookie('signin',`${accessToken}`);
   res.status(200).json({
     userId: user.id,
     username: user.username,
@@ -104,7 +104,10 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction){
     expiresIn: 2400,
   });
 }
-
+export async function signOut(req:Request,res:Response,next:NextFunction){
+  res.clearCookie('signin')
+  res.status(200).json('user signed out');
+}
 // Hjálpar middleware sem athugar hvort notandi sé innskráður og hleypir okkur
 // þá áfram, annars sendir á /login
 

@@ -11,7 +11,7 @@ import { getRegistrations } from '../lib/db.js';
 
 import {postRegistration, deleteRegistration, getEventRegistrations, patchRegistration } from '../lib/Registrations.js';
 import { createUser, findByUsername } from '../lib/Users.js';
-import passport, { authMiddleware, isUser } from '../lib/login.js';
+import passport, { authMiddleware, isUser, signOut } from '../lib/login.js';
 import { validateUser } from '../lib/Validators.js';
 import { cookie } from 'express-validator';
 
@@ -44,6 +44,11 @@ export async function index(req:Request, res: Response) {
         response: ["200 OK", "400 Bad request", "401 Unauthorized"],
       },
       {
+        href: '/logout',
+        methods: ['POST'],
+        response: ["200 OK"]
+      },
+      {
         href: '/signup',
         methods: ['POST'],
       }
@@ -58,15 +63,16 @@ router.get('/event/:slug', getEvent); // virkar
 router.patch('/event/:slug', updateEvent); // virkar
 router.delete('/event/:slug', deleteEvent); // virkar en ekki sem er með id 1 
 
-router.get('/event/:slug/regis',getEventRegistrations)
-router.patch('/event/:slug/regis/:username',patchRegistration)
-router.delete('/event/:slug/regis/:username',deleteRegistration)
-router.post('/event/:slug',postRegistration)
+router.get('/event/:slug/regis',getEventRegistrations);
+router.patch('/event/:slug/regis/:username',patchRegistration);
+router.delete('/event/:slug/regis/:username',deleteRegistration);
+router.post('/event/:slug',postRegistration);
 //router.get('/event/:events/:user', registerDetails)
 //router.patch('/event/:events/:user',updateRegistration)
 
-router.post('/login', passport.authenticate("local", {session: false}), authMiddleware)
-router.post('/signup', createUser)
+router.post('/login', passport.authenticate("local", {session: false}), authMiddleware);
+router.post('/signup', createUser);
+router.post('/logout',signOut);
 
 //router.post('/login',loginCheck)
 //router.get('/logout',endSession)
