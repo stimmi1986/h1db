@@ -20,7 +20,7 @@
 ## Events:
 {
     "id": 1,
-    "name": "Forritarahittingur ¡ febrúar",
+    "name": "Forritarahittingur í febrúar",
     "slug": "forritarahittingur-i-februar",
     "description": "Forritarar hittast í febrúar og forrita saman eitthvað frábært.",
     "created": "2023-03-23T17:15:31.320Z",
