@@ -61,7 +61,7 @@ export async function index(req:Request, res: Response) {
       },
       {
         href:'/image',
-        methods: ['GET - get all images','POST - add image to database']
+        methods: ['GET - get all imagesgi','POST - add image to database']
       },
       {
         href:'/image/:image',
