@@ -16,6 +16,4 @@ INSERT INTO registrations (name,username, comment, event) VALUES ('Guðrún Guð
 INSERT INTO registrations (name,username, comment, event) VALUES ('algotrazh','D', 'hvað er ostur?', 4);
 INSERT INTO registrations (name,username, comment, event) VALUES ('Jón Jónsson','B', null, 5);
 
-insert into eventImages (name,event,url) values ('fáni',2,'https://upload.wikimedia.org/wikipedia/commons/a/ae/Olympic_flag.jpg');
-
 

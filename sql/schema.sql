@@ -30,16 +30,16 @@ CREATE TABLE public.registrations (
 );
 CREATE TABLE public.images(
   id SERIAL primary KEY,
-  name varchar(64) not null UNIQUE,
-  url varchar(254) not null UNIQUE
-)
+  name varchar(64) UNIQUE not null ,
+  url varchar(254) UNIQUE not null 
+);
 
 CREATE TABLE public.eventImages(
   id SERIAL PRIMARY KEY,
   image INTEGER not null,
   event INTEGER not null,
   url varchar(254) not null,
-  constraint pair UNIQUE(name,event),
-  constraint event FOREIGN KEY (event) REFERENCES events (id)
-  constraint image FOREIGN KEY (event) REFERENCES images (id)
+  constraint pair UNIQUE(image,event),
+  constraint event FOREIGN KEY (event) REFERENCES events (id),
+  constraint unique_image FOREIGN KEY (image) REFERENCES images (id)
 );
