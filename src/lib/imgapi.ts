@@ -1,21 +1,56 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction, query } from 'express';
 import jwt from "jsonwebtoken";
 import {uploadImage} from '../imgs/img.js'
-import { getImagesByEventSlug, insertEventImage } from './db.js';
+import { allImages, deleteFullyImageByName, deleteImageFromEvent, getEventBySlug, getImagesByEventSlug, getSpecificImageByName, insertEventImage, putEventImage } from './db.js';
+import slugify from 'slugify';
 
 export async function addImage(req:Request,res:Response,next:NextFunction){
-    const {slug} = req.params;
     const {name, url} = req.body;
     try{
+        const exists = await getSpecificImageByName(slugify(name).toLowerCase());
+        if(exists){
+            return res.status(406).json('Mynd með þessu nafni er þegar til')
+        }
         const result = await uploadImage(url,name);
-        console.error(result);
-        const insert = await insertEventImage(slug,name,result.url);
-        return res.status(200).json(insert);    
+        if(!result){
+            return res.status(500).json('vandamál með cloudify.')
+        }
+        return res.status(200).json(result);    
     }catch{
         return res.status(500)
     }
 }
-export async function getImages(req:Request,res:Response,next:NextFunction){
+export async function addImageToEvent(req:Request,res:Response,next:NextFunction){
+    const {slug} = req.params;
+    const {name} = req.body;
+    const image = await getSpecificImageByName(name);
+    const event = await getEventBySlug(slug);
+    if(!event){
+        res.status(404).json('viðburður með þessu nafni er ekki í kerfinu')
+    }
+    if(!image){
+        res.status(404).json('mynd með þessu nafni er ekki í kerfinu');
+    }
+    const ret = await putEventImage(image,event);
+    if(!ret){
+        res.status(500).json('ekki tókst að tengja mynd við viðgurð');
+    }
+    return res.status(201).json([event,image]);
+}
+export async function getEventImage(req:Request,res:Response,next:NextFunction){
+    const {slug,image} = req.params;
+    const img = await getSpecificImageByName(image);
+    const event = await getImagesByEventSlug(slug);
+    if(!img){
+        return res.status(404).json('mynd með þessu nafni er ekki til');
+    }
+    for(const ev of event){
+        if(ev.id == img.id){
+            return img;
+        }
+    }return res.status(403).json('þessi mynd er til en tilheyrir ekki þessum viðburði');
+}
+export async function getEventImages(req:Request,res:Response,next:NextFunction){
     const {slug} = req.params;
     const result = await getImagesByEventSlug(slug);
     if(!result){
@@ -23,4 +58,33 @@ export async function getImages(req:Request,res:Response,next:NextFunction){
     }
     return res.status(200).json(result);
     
+}
+export async function removeImageFromEvent(req:Request,res:Response,next:NextFunction){
+    const {slug,image} = req.params;
+    const img = await deleteImageFromEvent(image,slug);
+    if(!img){
+        return res.status(404).json('Þessi mynd var ekki tengd við þennan viðburð');
+    }
+    return res.status(200).json('mynd eytt af viðburði');
+}
+export async function getImage(req:Request,res:Response,next:NextFunction){
+    const {image} = req.params;
+    const img = await getSpecificImageByName(image);
+    if(!img){
+        return next();
+    }
+    return res.status(200).json(img);
+}
+export async function getImages(req:Request,res:Response,next:NextFunction){
+    const images = await allImages();
+    return res.status(200).json(images);
+}
+export async function deleteImage(req:Request,res:Response,next:NextFunction){
+    const {image} = req.params;
+    const del = await deleteFullyImageByName(image);
+    if(!del){
+        return next();
+    }
+    return res.status(200).json('Mynd eytt')
+
 }

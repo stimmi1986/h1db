@@ -2,6 +2,7 @@ import util from 'util';
 import {readFile}from 'fs';
 import { v2 as cloudinary } from 'cloudinary';
 import dotenv from 'dotenv';
+import slugify from 'slugify';
 
 dotenv.config();
 cloudinary.config({
@@ -67,9 +68,10 @@ export const uploadImage = async (imagePath,name) => {
 
   try {
     // Upload the image
-    const result = await cloudinary.uploader.upload(imagePath, {public_id:name});
+    const result = await cloudinary.uploader.upload(imagePath, {public_id:slugify(name).toLowerCase()});
     return result;
   } catch (error) {
     console.error(error);
+    return null;
   }
 };

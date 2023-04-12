@@ -123,3 +123,21 @@ const regi: Regi = {
 
 return regi;
 }
+//images
+export type Img = {
+  id:number,
+  name:string,
+  url:string
+};
+export function ImgMapper(input:unknown): Img | null {
+  const potentialImg = input as Partial<Img> | null;
+  if(!potentialImg||!potentialImg.id||!potentialImg.name||potentialImg.url){
+    return null;
+  }
+  const img: Img={
+    id:potentialImg.id,
+    name:potentialImg.name,
+    url:potentialImg.url
+  };
+  return img;
+}

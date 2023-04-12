@@ -28,12 +28,18 @@ CREATE TABLE public.registrations (
   CONSTRAINT username FOREIGN KEY (username) REFERENCES users (username),
   constraint uq_pair  UNIQUE(username,event)
 );
+CREATE TABLE public.images(
+  id SERIAL primary KEY,
+  name varchar(64) not null UNIQUE,
+  url varchar(254) not null UNIQUE
+)
 
 CREATE TABLE public.eventImages(
   id SERIAL PRIMARY KEY,
-  name varchar(64) not null,
+  image INTEGER not null,
   event INTEGER not null,
   url varchar(254) not null,
   constraint pair UNIQUE(name,event),
   constraint event FOREIGN KEY (event) REFERENCES events (id)
+  constraint image FOREIGN KEY (event) REFERENCES images (id)
 );

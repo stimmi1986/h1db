@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import pg ,{ QueryResult }  from 'pg';
-import { Event, eventMapper, Regi, RegisMapper } from '../routes/types.js'
+import { Event, eventMapper, Img, ImgMapper, Regi, RegisMapper } from '../routes/types.js'
 import { readFile } from 'fs/promises';
 import { DbRegisToRegis, DbRegiToRegi } from './Registrations.js';
 import { findById } from './Users.js';
@@ -178,28 +178,34 @@ export async function insertEventImage(slug:string,img:string,url:string){
     return null;
   }
   console.log(event)
-  const insert = `insert into eventImages (name,event,url) values ($1,$2,$3)returning *;`;
-  const qi = await query(insert,[img,event.id,url]);
+  
+  const insert = `insert into images (name,url) values ($1,$2) returning name,url,id;`;
+  const qi = await query(insert,[img,url]);
   console.log(qi)
   if(!qi){
     return null;
   }
-  return qi.rows[0].name;
+  const insert2 = `insert into eventImages (image,event) values ($1,$2)returning *;`;
+  await query(insert2,[qi.rows[0].id]);
+  return [qi.rows[0].name,qi.rows[0].url];
 }
 export async function getImagesByEventSlug(slug:string){
   if(!slug){
     return [];
   }
   const list = [];
-  const q = `select eventImages.name as name,eventImages.url as url 
-    from eventImages left join events on eventImages.event= events.id
+  const q = `select images.id as id,images.name as name,images.url as url 
+    from eventImages left join events 
+    on eventImages.event= events.id
+    left joins images on images.id = eventImages.id
     where events.slug = $1 `;
   const imgs = await query(q,[slug]);
   if(!imgs){
     return [];
   }
   for(const row of imgs.rows){
-    list.push([row.name,row.url]);
+    const content = ImgMapper(row);
+    list.push(content);
   }
   return list;
 }
@@ -207,14 +213,62 @@ export async function getSpecificImageByName(name:string){
   if(!name){
     return null;
   }
-  const select = `select url from eventImages where name = $1`;
+  const select = `select id,name,url from images where name = $1`;
   const result = await query(select,[name]);
   if(!result){
     return null;
   }
-  return result.rows[0].url;
+  const ret = ImgMapper(result.rows[0]);
+  return ret;
 }
+export async function putEventImage(image:Img,event:Event){
+  if(!image||!event){
+    return null;
+  }
+  const insert = await query('insert into eventImages (image,event) values ($1,$2) returning 1;',[image.id,event.id]);
+  if(!insert){
+    return null;
+  }
+  return true;
+}
+export async function deleteFullyImageByName(name: string){
+  const image = await getSpecificImageByName(name);
+  if(!image){
+    return null;
+  }
+  await query(`delete from eventImages where image = $1;`,[image.id]);
+  const deleter = await query(`delete from images where id = $1 returning 1;`,[image.id]);
+  if(!deleter){
+    return null;
+  }
+  return true;
+}
+export async function deleteImageFromEvent(name: string,event:string){
+  const image = await getSpecificImageByName(name);
+  const ev = await getEventBySlug(event);
+  if(!image||!ev){
+    return null;
+  }
+  const del = `delete from eventImages where image = $1 and event =$2 returning 1;`;
+  const d = await query(del,[image.id,ev.id]);
+  if(!d){
+    return null
+  }
+  return true;
 
+}
+export async function allImages(){
+  const q = `select id,name,url from images`;
+  const images = await query(q,[]);
+  const list = [];
+  if(!images){
+    return list;
+  }
+  for(const row of images.rows){
+    list.push(ImgMapper);
+  }
+  return list;
+}
 
 export async function end() {
   await pool.end();
