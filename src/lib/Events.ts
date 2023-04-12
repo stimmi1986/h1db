@@ -187,7 +187,6 @@ export async function deleteEvent(
   }
 
   const result = await deleteEventBySlug(slug);
-console.log(slug)
   if (!result) {
     return res.status(500).json('vandamál við eyðingu viðburðar');
   }

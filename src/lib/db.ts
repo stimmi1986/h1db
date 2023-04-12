@@ -137,11 +137,9 @@ export async function conditionalUpdate(
   values: Array<string | number | null>,
 ) {
   const filteredFields = fields.filter((i) => typeof i === 'string');
-  console.log(filteredFields)
   const filteredValues = values.filter(
     (i): i is string | number => typeof i === 'string' || typeof i === 'number',
   );
-  console.log(filteredValues)
 
   if (filteredFields.length === 0) {
     return false;
