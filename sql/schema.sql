@@ -38,7 +38,6 @@ CREATE TABLE public.eventImages(
   id SERIAL PRIMARY KEY,
   image INTEGER not null,
   event INTEGER not null,
-  url varchar(254) not null,
   constraint pair UNIQUE(image,event),
   constraint event FOREIGN KEY (event) REFERENCES events (id),
   constraint unique_image FOREIGN KEY (image) REFERENCES images (id)

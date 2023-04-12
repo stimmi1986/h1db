@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction, query } from 'express';
 import jwt from "jsonwebtoken";
 import {uploadImage} from '../imgs/img.js'
-import { allImages, deleteFullyImageByName, deleteImageFromEvent, getEventBySlug, getImagesByEventSlug, getSpecificImageByName, insertEventImage, putEventImage } from './db.js';
+import { addImageToDatabase, allImages, deleteFullyImageByName, deleteImageFromEvent, getEventBySlug, getImagesByEventSlug, getSpecificImageByName, insertEventImage, putEventImage } from './db.js';
 import slugify from 'slugify';
 
 export async function addImage(req:Request,res:Response,next:NextFunction){
@@ -13,9 +13,13 @@ export async function addImage(req:Request,res:Response,next:NextFunction){
         }
         const result = await uploadImage(url,name);
         if(!result){
-            return res.status(500).json('vandamál með cloudify.')
+            return res.status(500).json('vandamál með cloudify.');
         }
-        return res.status(200).json(result);    
+        const save = await addImageToDatabase(slugify(name).toLowerCase(),result.url);
+        if(!save){
+            return res.status(500).json('vandamál með gagnagrunn');
+        }
+        return res.status(200).json(save);    
     }catch{
         return res.status(500)
     }
@@ -33,20 +37,22 @@ export async function addImageToEvent(req:Request,res:Response,next:NextFunction
     }
     const ret = await putEventImage(image,event);
     if(!ret){
-        res.status(500).json('ekki tókst að tengja mynd við viðgurð');
+        res.status(500).json('ekki tókst að tengja mynd við viðburð');
     }
     return res.status(201).json([event,image]);
 }
 export async function getEventImage(req:Request,res:Response,next:NextFunction){
     const {slug,image} = req.params;
     const img = await getSpecificImageByName(image);
+    console.error(img);
     const event = await getImagesByEventSlug(slug);
+    console.error(event);
     if(!img){
         return res.status(404).json('mynd með þessu nafni er ekki til');
     }
     for(const ev of event){
-        if(ev.id == img.id){
-            return img;
+        if(ev.id === img.id){
+            return res.status(200).json(img);
         }
     }return res.status(403).json('þessi mynd er til en tilheyrir ekki þessum viðburði');
 }

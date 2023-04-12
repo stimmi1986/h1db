@@ -197,7 +197,7 @@ export async function getImagesByEventSlug(slug:string){
   const q = `select images.id as id,images.name as name,images.url as url 
     from eventImages left join events 
     on eventImages.event= events.id
-    left joins images on images.id = eventImages.id
+    left join images on images.id = eventImages.id
     where events.slug = $1 `;
   const imgs = await query(q,[slug]);
   if(!imgs){
@@ -221,15 +221,30 @@ export async function getSpecificImageByName(name:string){
   const ret = ImgMapper(result.rows[0]);
   return ret;
 }
-export async function putEventImage(image:Img,event:Event){
+export async function putEventImage(image:Img,event:Event):Promise<boolean>{
   if(!image||!event){
     return null;
   }
+  console.error(image.id)
+  console.error(event.id)
   const insert = await query('insert into eventImages (image,event) values ($1,$2) returning 1;',[image.id,event.id]);
   if(!insert){
     return null;
   }
   return true;
+}
+export async function addImageToDatabase(name:string,url:string):Promise <Img | null> {
+  console.error(url)
+  const insert = `insert into images (name,url) values ($1,$2) returning id, name, url;`;
+  const result = await query(insert,[name,url]);
+  if(!result){
+    return null;
+  }
+  console.error(result.rows[0])
+  const ret = ImgMapper(result.rows[0]);
+  console.error(ret);
+  return ret;
+
 }
 export async function deleteFullyImageByName(name: string){
   const image = await getSpecificImageByName(name);
@@ -265,7 +280,7 @@ export async function allImages(){
     return list;
   }
   for(const row of images.rows){
-    list.push(ImgMapper);
+    list.push(ImgMapper(row));
   }
   return list;
 }

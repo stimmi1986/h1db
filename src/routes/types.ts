@@ -131,7 +131,7 @@ export type Img = {
 };
 export function ImgMapper(input:unknown): Img | null {
   const potentialImg = input as Partial<Img> | null;
-  if(!potentialImg||!potentialImg.id||!potentialImg.name||potentialImg.url){
+  if(!potentialImg||!potentialImg.id||!potentialImg.name||!potentialImg.url){
     return null;
   }
   const img: Img={
