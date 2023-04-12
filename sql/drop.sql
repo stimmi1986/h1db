@@ -1,0 +1,5 @@
+DROP TABLE IF EXISTS eventImages;
+DROP TABLE IF EXISTS registrations;
+DROP TABLE IF EXISTS events;
+DROP TABLE IF EXISTS users;
+
