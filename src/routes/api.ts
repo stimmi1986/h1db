@@ -12,7 +12,7 @@ import { getRegistrations } from '../lib/db.js';
 import {postRegistration, deleteRegistration, getEventRegistrations, patchRegistration } from '../lib/Registrations.js';
 import { createUser, findByUsername } from '../lib/Users.js';
 import passport, { authMiddleware, isUser, signOut } from '../lib/login.js';
-import { addImage, getImages } from '../lib/imgapi.js';
+import { addImage, addImageToEvent, getImage,getEventImages, getEventImage, removeImageFromEvent, getImages, deleteImage } from '../lib/imgapi.js';
 
 
 
@@ -50,7 +50,24 @@ export async function index(req:Request, res: Response) {
       {
         href: '/signup',
         methods: ['POST'],
+      },
+      {
+        href:'/event/:slug/img',
+        methods: ['GET - all images related to event','POST - add image from imagebase to event with its name']
+      },
+      {
+        href:'/event/:slug/img/:image',
+        methods: ['GET - get this particular image if it in the event','DELETE - remove the image from this event']
+      },
+      {
+        href:'/image',
+        methods: ['GET - get all images','POST - add image to database']
+      },
+      {
+        href:'/image/:image',
+        methods: ['GET - get specific image','DELETE - fully remove image and references to it.']
       }
+      
     ]);
 }
 
@@ -62,9 +79,17 @@ router.get('/event/:slug', getEvent); // virkar
 router.patch('/event/:slug', updateEvent); // virkar
 router.delete('/event/:slug', deleteEvent); // virkar en ekki sem er með id 1 
 
-//router.get('/event/:slug/img/:image',getImage)
-router.get('/event/:slug/img',getImages)
-router.post('/event/:slug/img',addImage)
+
+router.get('/event/:slug/img',getEventImages)
+router.post('/event/:slug/img',addImageToEvent)
+router.get('/event/:slug/img/:image',getEventImage)
+router.delete('/event/:slug/img/:image',removeImageFromEvent)
+
+router.get('/image',getImages)
+router.post('/image',addImage)
+router.get('/image/:image', getImage)
+router.delete('/image/:image',deleteImage)
+
 //router.delete('/event/:slug/img/:image',delImage)
 
 router.get('/event/:slug/regis',getEventRegistrations);
