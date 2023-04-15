@@ -77,6 +77,5 @@ router.post('/login', passport.authenticate("local", {session: false}), authMidd
 router.post('/signup', createUser);
 router.post('/logout',signOut);
 
-//router.post('/login',loginCheck)
 //router.get('/logout',endSession)
 
