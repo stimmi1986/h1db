@@ -20,13 +20,13 @@ declare global {
 const app = express();
 
 app.use(express.json());
+app.use(cors);
+app.use(assertContentTypeForPostAndPatch);
 
 app.use(cookieParser(process.env.SESSION_SECRET));
 app.use(router);
-app.use(assertContentTypeForPostAndPatch);
-app.use(cors);
 
-const port = 3000;
+const port = 5000;
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);
