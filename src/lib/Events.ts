@@ -170,10 +170,10 @@ export async function deleteEvent(
   res: Response,
   next: NextFunction,
 ) {
-  if(!req.cookies?.signin){
-    return res.status(401).json("ekki skráður inn")
+  if(!req.body.token){
+    return res.status(401).json("ekkert token")
   }
-  const userInfo=jwt.decode(req.cookies.signin)
+  const userInfo=jwt.decode(req.body.token)
   if(!userInfo||!userInfo['username']){
       return res.status(401).json('ekki skráður inn');
   }

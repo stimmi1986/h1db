@@ -12,7 +12,7 @@ CREATE TABLE public.users (
   id serial primary key,
   name character varying(64) NOT NULL,
   username character varying(64) NOT NULL UNIQUE,
-  password character varying(256) NOT NULL,{"url":"https://i.guim.co.uk/img/media/7952718fda1246e1f3f7a88f20f4e4ea42921e2e/0_0_6000_4000/master/6000.jpg?width=620&quality=85&dpr=1&s=none", "name":"oat-milk"}
+  password character varying(256) NOT NULL,
   admin BOOLEAN DEFAULT false
 );
 
@@ -30,10 +30,9 @@ CREATE TABLE public.registrations (
 );
 CREATE TABLE public.images(
   id SERIAL primary KEY,
-  name varchar(64) UNIQUE not null on delete cascade,
-  url varchar(254) UNIQUE not null on delete cascade
+  name varchar(64) UNIQUE not null,
+  url varchar(254) UNIQUE not null
 );
-
 CREATE TABLE public.eventImages(
   id SERIAL PRIMARY KEY,
   image INTEGER not null,
