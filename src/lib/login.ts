@@ -45,7 +45,7 @@ function generateToken(user: User){
   const secret = process.env.SESSION_SECRET || "your-secret-key";
 
   const options = {
-    expiresIn: "24h"
+    expiresIn: 24000000,
   }
 
   return jwt.sign(userInfo, secret, options)
@@ -101,7 +101,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction){
     isAdmin: user.admin,
     access_Token: accessToken,
     tokenType: "Bearer",
-    expiresIn: 2400,
+    expiresIn: 24000000,
   });
 }
 export async function signOut(req:Request,res:Response,next:NextFunction){

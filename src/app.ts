@@ -20,8 +20,8 @@ declare global {
 const app = express();
 
 app.use(express.json());
-app.use(cors);
 app.use(assertContentTypeForPostAndPatch);
+app.use(cors);
 
 app.use(cookieParser(process.env.SESSION_SECRET));
 app.use(router);
