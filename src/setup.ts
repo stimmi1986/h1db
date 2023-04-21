@@ -1,6 +1,6 @@
 import { readFile } from 'fs/promises';
 import { createSchema, dropSchema, end, query } from './lib/db.js';
-
+//prufa
 async function dropDatabase() {
   const isDropped = await dropSchema();
   if (isDropped) {
