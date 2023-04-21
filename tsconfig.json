@@ -1,0 +1,13 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+      "target": "es6",
+      "strict": false,
+      "esModuleInterop": true,
+      "module": "esnext",
+      "moduleResolution": "node",
+      "forceConsistentCasingInFileNames": true
+    },
+    "include": ["**/*.ts", "src/setup.js", "src/lib/slugify.js", "src/imgs/cloudinary.js"],
+    "exclude": ["node_modules", "**/*.spec.ts"]
+  }
